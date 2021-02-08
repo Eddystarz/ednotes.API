@@ -1,0 +1,29 @@
+{
+  "name": "ednotes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "migrate": " sequelize db:migrate",
+    "dev": "nodemon server --exec babel-node -e js",
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "DAABS",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server-express": "^2.19.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "graphql": "^15.5.0",
+    "graphql-iso-date": "^3.6.1",
+    "graphql-resolvers": "^0.4.2",
+    "graphql-tools": "^7.0.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.6.4",
+    "mongoose": "^5.11.15",
+    "uuid": "^8.3.2"
+  }
+}
