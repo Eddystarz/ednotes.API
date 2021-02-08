@@ -16,22 +16,24 @@ dotenv.config()
 connection()
 
 const app = express();
-// app.use(cors())
+app.use(cors())
 
-// app.use(express.json());
+app.use(express.json());
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: async({req, connection})=> {//if we want to get something as a per request basis then we declare context func
-    const contextObj = {}
-    if (req){
-        await verifyUser(req) 
-    contextObj.email= req.email,
-    contextObj.loggedInUserId = req.loggedInUserId
-    }
-    return contextObj
-    },
+    introspection: true, 
+    playground: true,
+    typeDefs,
+    resolvers,
+    context: async({req, connection})=> {//if we want to get something as a per request basis then we declare context func
+        const contextObj = {}
+        if (req){
+            await verifyUser(req) 
+        contextObj.email= req.email,
+        contextObj.loggedInUserId = req.loggedInUserId
+        }
+        return contextObj
+        },
     formatError: (error) => {
 
         
