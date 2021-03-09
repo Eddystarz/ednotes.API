@@ -74,12 +74,30 @@ module.exports = {
 
         console.log(error)
         throw error
-     
-
      }
-
-     
     } ,
+    adminSignup: async (_, {input }) => {
+      try{
+
+       const user = await User.findOne({ email: input.email })
+       if (user) {
+         throw new Error('Email already in use')
+       }
+
+       const hashedPassword = await bcrypt.hash(input.password, 12)
+       const newUser = new User({...input, password: hashedPassword, isAdmin:true, isVerified:true })
+       const result = await newUser.save()
+         PubSub.publish(userEvents.USER_CREATED,{
+           userCreated: result
+       })
+       return result
+
+      }catch(error){
+
+       console.log(error)
+       throw error
+    }
+    },
 
     login:async (_,{input}) => {
       try {
@@ -162,7 +180,9 @@ module.exports = {
       console.log(email)
       try{
         admin = {"isAdmin": true}
-        const user = await User.findOneAndUpdate({ email: email }, admin)
+        const user = await User.findOneAndUpdate({ email: email }, admin,{
+          useFindAndModify: false
+        })
         return "this person is now and admin"
         
       } catch (error) {

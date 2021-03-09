@@ -6,6 +6,7 @@ module.exports = gql`
  }
 
  extend type Mutation{
+      adminSignup(input: signupInput): User
       signup(input: signupInput): User
       login(input: loginInput ): Token
       confirmEmail(token: String!) : Boolean!
