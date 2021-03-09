@@ -2,11 +2,17 @@ const {gql} = require('apollo-server-express')
 module.exports = gql`
  extend type Query {
      user: User
+     users: [User]
  }
- 
-  extend type Mutation{
+
+ extend type Mutation{
       signup(input: signupInput): User
       login(input: loginInput ): Token
+      confirmEmail(token: String!) : Boolean!
+      forgotPassword(email: String!): String!
+      resetPassword(input: resetPasswordInput) : User
+      editUser(input: editInput): User
+      makeAdmin(email: String!): String!
  }
  
  input loginInput {
@@ -17,16 +23,32 @@ module.exports = gql`
      token: String!
  }
  input signupInput {
-     name: String!
+     firstName: String!
+     lastName: String!
+     username: String!
      email: String!
      password: String!
  }
+ input editInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+}
+ input resetPasswordInput{
+     password1: String!
+     password2: String!
+ }
  type User {
-         id: ID!
-         name: String!
-         email: String!
-         createdAt: Date!
-         updatedAt: Date!
+    id: ID!
+    firstName: String!
+    lastName: String!
+    username: String!
+    email: String!
+    isAdmin: Boolean
+    isVerified: Boolean
+    isActive: Boolean
+    createdAt: Date!
+    updatedAt: Date!
  }
  extend type Subscription {
      userCreated: User

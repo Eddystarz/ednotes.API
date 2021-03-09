@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "migrate": " sequelize db:migrate",
-    "dev": "nodemon server --exec babel-node -e js",
+    "dev": "nodemon server",
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,6 +24,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.4",
     "mongoose": "^5.11.15",
+    "nodemailer": "^6.4.18",
+    "nodemailer-sendgrid": "^1.0.3",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
