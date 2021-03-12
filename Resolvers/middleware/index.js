@@ -1,6 +1,7 @@
 
 const {skip} = require('graphql-resolvers')
 // const Task = require('../../database/Models/task')
+const User = require('../../database/Models/user')
 const {isValidObjectId} = require('../../database/util')
 
 module.exports.isAuthenticated = (_, __, {email}) => {
@@ -12,8 +13,8 @@ module.exports.isAuthenticated = (_, __, {email}) => {
 
 module.exports.isAdmin = async (_,__, {loggedInUserId}) => {
     try {
-        
-        if (loggedInUserId.isAdmin != true){
+        const user =  await User.findOne({ _id: loggedInUserId })
+        if (user.isAdmin != true){
             throw new Error('Not Authorized to perform this action')
         }
         return skip

@@ -13,7 +13,7 @@ const sendMail = require('../services/email_service')
 
 module.exports = {
   Query: {
-    users: combineResolvers(isAuthenticated, async (_,__, {email}) =>{
+    users: combineResolvers(isAuthenticated, isAdmin, async (_,__, {email}) =>{
       try {
         const users =  await User.find()
         if(!users){

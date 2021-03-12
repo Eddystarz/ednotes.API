@@ -3,17 +3,17 @@ const jwt = require('jsonwebtoken')
 const {combineResolvers} = require('graphql-resolvers')
 const {isAuthenticated} = require('./middleware')
 const {isAdmin} = require('./middleware')
-const School = require('../database/Models/school')
+const Faculty = require('../database/Models/faculty')
 
 module.exports = {
     Query: {
-      schools: combineResolvers(isAuthenticated, isAdmin, async (_,__, ___) =>{
+      faculties: combineResolvers(isAuthenticated, isAdmin, async (_,__, ___) =>{
         try {
-          const schools =  await School.find()
-          if(!schools){
+          const faculties =  await Faculty.find()
+          if(!faculties){
             throw new Error('Schools not found!')
             }
-          return schools
+          return faculties
         } catch (error) {
   
           console.log(error)
@@ -22,13 +22,13 @@ module.exports = {
         }
         
       }),
-      school: combineResolvers(isAuthenticated, async (_,{id}, ___ ) =>{
+      faculty: combineResolvers(isAuthenticated, async (_,{id}, ___) =>{
         try {
-          const school =  await School.findById(id)
-          if(!school){
-           throw new Error('School not found!')
+          const faculty =  await Faculty.findById(id)
+          if(!faculty){
+           throw new Error('Faculty not found!')
           }
-          return school;
+          return faculty;
         } catch (error) {
   
           console.log(error)
@@ -39,11 +39,10 @@ module.exports = {
       })
     },
     Mutation: {
-      createSchool:combineResolvers(isAuthenticated, isAdmin, async (_,{input} ) =>{
+      createFaculty:combineResolvers(isAuthenticated, isAdmin, async (_,{input} ) =>{
         try {
-          console.log("hello")
-          const school =  School({...input})
-          result = await school.save()
+          const faculty =  Faculty({...input})
+          result = await faculty.save()
           return result
         } catch (error) {
   

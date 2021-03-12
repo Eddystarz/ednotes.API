@@ -1,11 +1,12 @@
 const {gql} = require('apollo-server-express')
 module.exports = gql`
  extend type Query {
-     faculty: Faculty
+    faculty(id: ID!): Faculty
+    faculties: [Faculty]
  }
  
  extend type Mutation{
-      createFaculty(input: facultyInput): User  
+    createFaculty(input: facultyInput): Faculty  
  }
  
  input facultyInput {
@@ -13,6 +14,14 @@ module.exports = gql`
      name:String!
      description: String!
  }
+
+ type Faculty {
+    id : ID!
+    school: String!
+    name:String!
+    description: String!
+}
+
  extend type Subscription {
      facultyCreated: Faculty
  }
