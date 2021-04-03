@@ -25,6 +25,21 @@ module.exports.isAdmin = async (_,__, {loggedInUserId}) => {
     }
 
 }
+
+module.exports.isSuperAdmin = async (_,__, {loggedInUserId}) => {
+    try {
+        const user =  await User.findOne({ _id: loggedInUserId })
+        if (user.isSuperAdmin != true && user.isAdmin != true ){
+            throw new Error('Not Authorized to perform this action')
+        }
+        return skip
+        
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+
+}
 // module.exports.isTaskOwner = async (_,{ id }, {loggedInUserId}) => {
 //     try {
 //         if(!isValidObjectId(id)){
