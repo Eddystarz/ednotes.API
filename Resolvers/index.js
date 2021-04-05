@@ -5,6 +5,7 @@ const schoolResolver = require('./school')
 const facultyResolver = require('./faculty')
 const deptResolver = require('./dept')
 const levelResolver = require('./level')
+const studentResolver = require('./student')
 
 const customDateScalarResolver = {
  Date: GraphQLDateTime
@@ -16,5 +17,6 @@ module.exports = [
   facultyResolver,
   deptResolver,
   levelResolver,
+  studentResolver,
   customDateScalarResolver
 ];

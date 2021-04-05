@@ -1,8 +1,8 @@
 const {gql} = require('apollo-server-express')
 module.exports = gql`
  extend type Query {
-     student: User
-     students: [User]
+     student: Student
+     students: [Student]
  }
 
  extend type Mutation{
@@ -16,12 +16,14 @@ module.exports = gql`
     username: String!
     email: String!
     password: String!
-    school: String!
-    faculty: String!
-    dept: String!
-    level: String!
+    phoneNumber: String!
+    state: String!
+    school: String
+    faculty: String
+    dept: String
+    level: String
  }
- input editInput {
+ input editStudentInput {
     firstName: String!
     lastName: String!
     email: String!
@@ -29,13 +31,9 @@ module.exports = gql`
 
  type Student {
     id: ID!
-    firstName: String!
-    lastName: String!
-    username: String!
-    email: String!
-    isAdmin: Boolean
-    isVerified: Boolean
-    isActive: Boolean
+    user: String!
+    phoneNumber: String!
+    state: String!
     school: String!
     faculty: String!
     dept: String!

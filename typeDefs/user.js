@@ -6,14 +6,15 @@ module.exports = gql`
  }
 
  extend type Mutation{
-      adminSignup(input: signupInput): User
-      signup(input: signupInput): User
-      login(input: loginInput ): Token
-      confirmEmail(token: String!) : Boolean!
-      forgotPassword(email: String!): String!
-      resetPassword(input: resetPasswordInput) : User
-      editUser(input: editInput): User
-      makeAdmin(email: String!): String!
+    createSuperAdmin(input: signupInput): User
+    createAdmin(input: signupInput): User
+    signup(input: signupInput): User
+    login(input: loginInput ): Token
+    confirmEmail(token: String!) : Boolean!
+    forgotPassword(email: String!): String!
+    resetPassword(input: resetPasswordInput) : User
+    editUser(input: editUserInput): User
+    makeSuperAdmin(email: String!): String!
  }
  
  input loginInput {
@@ -30,7 +31,7 @@ module.exports = gql`
      email: String!
      password: String!
  }
- input editInput {
+ input editUserInput {
     firstName: String!
     lastName: String!
     email: String!
@@ -46,6 +47,7 @@ module.exports = gql`
     username: String!
     email: String!
     isAdmin: Boolean
+    isSuperAdmin: Boolean
     isVerified: Boolean
     isActive: Boolean
     createdAt: Date!

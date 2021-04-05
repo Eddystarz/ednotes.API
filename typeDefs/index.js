@@ -5,6 +5,7 @@ const schoolTypeDefs = require('./school');
 const facultyTypeDefs = require('./faculty');
 const deptTypeDefs = require('./dept');
 const levelTypeDefs = require('./level');
+const studentTypeDefs = require('./student');
 
 const typeDefs = gql`
 scalar Date
@@ -28,6 +29,7 @@ module.exports = [
     schoolTypeDefs,
     facultyTypeDefs,
     deptTypeDefs,
-    levelTypeDefs
+    levelTypeDefs,
+    studentTypeDefs
   ]
   

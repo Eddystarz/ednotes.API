@@ -3,7 +3,13 @@ const jwt = require('jsonwebtoken')
 const {combineResolvers} = require('graphql-resolvers')
 const {isAuthenticated} = require('./middleware')
 const {isAdmin} = require('./middleware')
+const User = require('../database/Models/user')
+const School = require('../database/Models/school')
+const Faculty = require('../database/Models/faculty')
+const Dept = require('../database/Models/department')
+const Level = require('../database/Models/level')
 const Student = require('../database/Models/student')
+const sendMail = require('../services/email_service')
 
 module.exports = {
     Query: {
@@ -41,9 +47,23 @@ module.exports = {
     Mutation: {
       studentSignup : async (_,{input} ) =>{
         try {
-          const level =  ({...input})
-          result = await level.save()
-          return result
+          const user_data = {firstName: input.firstName, lastName:input.lastName, username:input.username, email:input.email}
+          const user = await User.findOne({ email: input.email })
+          const school = await School.findOne({ name: input.school })
+          const faculty = await Faculty.findOne({ name: input.faculty })
+          const dept = await Dept.findOne({ name: input.dept })
+          const level = await Level.findOne({ name: input.level })
+          if (user) {
+            throw new Error('Email already in use')
+          }
+          const hashedPassword = await bcrypt.hash(input.password, 12)
+          const newUser = new User({...input, password: hashedPassword })
+          const result_user = await newUser.save()
+          const newStudent = new Student({user:result_user._id, phoneNumber:input.phoneNumber,
+                                        state:input.state, school:school._id, faculty:faculty._id, dept:dept._id,
+                                      level:level._id})
+          const result_student = await newStudent.save()
+          return result_student
         } catch (error) {
   
           console.log(error)

@@ -76,7 +76,29 @@ module.exports = {
         throw error
      }
     } ,
-    adminSignup: async (_, {input }) => {
+    createSuperAdmin: async (_, {input }) => {
+      try{
+
+       const user = await User.findOne({ email: input.email })
+       if (user) {
+         throw new Error('Email already in use')
+       }
+
+       const hashedPassword = await bcrypt.hash(input.password, 12)
+       const newUser = new User({...input, password: hashedPassword, isAdmin:true,isSuperAdmin:true, isVerified:true })
+       const result = await newUser.save()
+         PubSub.publish(userEvents.USER_CREATED,{
+           userCreated: result
+       })
+       return result
+
+      }catch(error){
+
+       console.log(error)
+       throw error
+    }
+    },
+    createAdmin: async (_, {input }) => {
       try{
 
        const user = await User.findOne({ email: input.email })
@@ -176,10 +198,10 @@ module.exports = {
         
       }
     },
-    makeAdmin: async(_,{email})=>{
+    makeSuperAdmin: async(_,{email})=>{
       console.log(email)
       try{
-        admin = {"isAdmin": true}
+        admin = {"isSuperAdmin": true}
         const user = await User.findOneAndUpdate({ email: email }, admin,{
           useFindAndModify: false
         })
