@@ -1,23 +1,19 @@
 const mongoose = require('mongoose')
 
-const pastQuestSchema = new mongoose.Schema({
+const courseTopicSchema = new mongoose.Schema({
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
-    },
-    courseTopic: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'CourseTopic'
     },
     name: {
         type: String,
         required: true
     },
-    text: {
+    description: {
         type: String,
         required: true
     },
 
 })
 
-module.exports = mongoose.model('MemoryLab', memoryLabSchema)
+module.exports = mongoose.model('CourseTopic', courseTopicSchema)

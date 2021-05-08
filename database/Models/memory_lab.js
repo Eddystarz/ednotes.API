@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const pastQuestSchema = new mongoose.Schema({
+const memoryLabSchema = new mongoose.Schema({
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
