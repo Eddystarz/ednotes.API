@@ -1,13 +1,18 @@
-const bcrypt = require("bcryptjs");
-const { combineResolvers } = require("graphql-resolvers");
-const { isAuthenticated } = require("./middleware");
-const { isAdmin } = require("./middleware");
-const User = require("../database/Models/user");
-const School = require("../database/Models/school");
-const Faculty = require("../database/Models/faculty");
-const Dept = require("../database/Models/department");
-const Level = require("../database/Models/level");
-const Student = require("../database/Models/student");
+import { combineResolvers } from "graphql-resolvers";
+import bcrypt from "bcryptjs";
+
+// ========== Models ==============//
+import User from "../database/Models/user";
+import School from "../database/Models/school";
+import Faculty from "../database/Models/faculty";
+import Dept from "../database/Models/department";
+import Level from "../database/Models/level";
+import Student from "../database/Models/student";
+
+// ============= Services ===============//
+import { isAuthenticated, isAdmin } from "./middleware";
+import { pubsub } from "../subscription";
+import { UserTopics } from "../subscription/events/user";
 
 module.exports = {
   Query: {
@@ -23,6 +28,7 @@ module.exports = {
         throw error;
       }
     }),
+
     student: combineResolvers(isAuthenticated, async (_, { id }) => {
       try {
         const student = await Student.findById(id);
@@ -36,6 +42,7 @@ module.exports = {
       }
     })
   },
+
   Mutation: {
     studentSignup: async (_, { input }) => {
       try {
@@ -44,9 +51,11 @@ module.exports = {
         const faculty = await Faculty.findOne({ name: input.faculty });
         const dept = await Dept.findOne({ name: input.dept });
         const level = await Level.findOne({ name: input.level });
+
         if (user) {
           throw new Error("Email already in use");
         }
+
         const hashedPassword = await bcrypt.hash(input.password, 12);
         const newUser = new User({ ...input, password: hashedPassword });
         const result_user = await newUser.save();
@@ -59,6 +68,7 @@ module.exports = {
           dept: dept._id,
           level: level._id
         });
+
         const result_student = await newStudent.save();
         return result_student;
       } catch (error) {
@@ -67,9 +77,10 @@ module.exports = {
       }
     }
   },
+
   Subscription: {
     levelCreated: {
-      subscribe: () => PubSub.asyncIterator(userEvents.USER_CREATED)
+      subscribe: () => pubsub.asyncIterator(UserTopics.USER_CREATED)
     }
   }
 };

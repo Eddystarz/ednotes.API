@@ -1,11 +1,16 @@
-const { combineResolvers } = require("graphql-resolvers");
-const { isAuthenticated } = require("./middleware");
-const { isAdmin } = require("./middleware");
-const School = require("../database/Models/school");
+import { combineResolvers } from "graphql-resolvers";
 
-module.exports = {
+// ========== Models ==============//
+import School from "../database/Models/school";
+
+// ============= Services ===============//
+import { isAuthenticated, isAdmin } from "./middleware";
+import { pubsub } from "../subscription";
+import { UserTopics } from "../subscription/events/user";
+
+export default {
   Query: {
-    schools: combineResolvers(isAuthenticated, isAdmin, async (_, __, ___) => {
+    schools: combineResolvers(isAuthenticated, isAdmin, async () => {
       try {
         const schools = await School.find();
         if (!schools) {
@@ -17,7 +22,8 @@ module.exports = {
         throw error;
       }
     }),
-    school: combineResolvers(isAuthenticated, async (_, { id }, ___) => {
+
+    school: combineResolvers(isAuthenticated, async (_, { id }) => {
       try {
         const school = await School.findById(id);
         if (!school) {
@@ -30,6 +36,7 @@ module.exports = {
       }
     })
   },
+
   Mutation: {
     createSchool: combineResolvers(
       isAuthenticated,
@@ -47,9 +54,10 @@ module.exports = {
       }
     )
   },
+
   Subscription: {
     userCreated: {
-      subscribe: () => PubSub.asyncIterator(userEvents.USER_CREATED)
+      subscribe: () => pubsub.asyncIterator(UserTopics.USER_CREATED)
     }
   }
 };

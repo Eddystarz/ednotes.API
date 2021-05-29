@@ -1,5 +1,8 @@
 import nodemailer from "nodemailer";
 import nodemailerSendgrid from "nodemailer-sendgrid";
+import { config } from "dotenv";
+
+config();
 
 const auth = {
   auth: {

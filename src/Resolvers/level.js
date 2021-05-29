@@ -1,10 +1,14 @@
-const { combineResolvers } = require("graphql-resolvers");
-const { isAuthenticated } = require("./middleware");
-const { isAdmin } = require("./middleware");
-const Level = require("../database/Models/level");
-const level = require("../typeDefs/level");
+import { combineResolvers } from "graphql-resolvers";
 
-module.exports = {
+// ========== Models ==============//
+import Level from "../database/Models/level";
+
+// ============= Services ===============//
+import { isAuthenticated, isAdmin } from "./middleware";
+import { pubsub } from "../subscription";
+import { UserTopics } from "../subscription/events/user";
+
+export default {
   Query: {
     levels: combineResolvers(isAuthenticated, isAdmin, async () => {
       try {
@@ -18,6 +22,7 @@ module.exports = {
         throw error;
       }
     }),
+
     level: combineResolvers(isAuthenticated, async (_, { id }) => {
       try {
         const level = await Level.findById(id);
@@ -31,6 +36,7 @@ module.exports = {
       }
     })
   },
+
   Mutation: {
     createLevel: combineResolvers(
       isAuthenticated,
@@ -47,9 +53,10 @@ module.exports = {
       }
     )
   },
+
   Subscription: {
     levelCreated: {
-      subscribe: () => PubSub.asyncIterator(userEvents.USER_CREATED)
+      subscribe: () => pubsub.asyncIterator(UserTopics.USER_CREATED)
     }
   }
 };

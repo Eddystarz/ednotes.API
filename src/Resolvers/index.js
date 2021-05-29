@@ -1,15 +1,18 @@
-const { GraphQLDateTime } = require("graphql-iso-date");
-const userResolver = require("./user");
-const schoolResolver = require("./school");
-const facultyResolver = require("./faculty");
-const deptResolver = require("./dept");
-const levelResolver = require("./level");
-const studentResolver = require("./student");
+import { GraphQLDateTime } from "graphql-iso-date";
+
+// ========= Resolvers ========//
+import userResolver from "./user";
+import schoolResolver from "./school";
+import facultyResolver from "./faculty";
+import deptResolver from "./dept";
+import levelResolver from "./level";
+import studentResolver from "./student";
 
 const customDateScalarResolver = {
   Date: GraphQLDateTime
 };
-module.exports = [
+
+export default [
   userResolver,
   schoolResolver,
   facultyResolver,

@@ -1,8 +1,13 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+import { config } from "dotenv";
 
-export const connection = async () => {
+config();
+
+mongoose.Promise = global.Promise; // To Use Promises With Mongoose
+
+export const connection = () => {
   try {
-    await mongoose.connect(process.env.MONGO_DB_URL, {
+    mongoose.connect(process.env.MONGO_DB_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

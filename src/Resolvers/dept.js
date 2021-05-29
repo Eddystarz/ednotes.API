@@ -1,9 +1,14 @@
-const { combineResolvers } = require("graphql-resolvers");
-const { isAuthenticated } = require("./middleware");
-const { isAdmin } = require("./middleware");
-const Dept = require("../database/Models/department");
+import { combineResolvers } from "graphql-resolvers";
 
-module.exports = {
+// ========== Models ==============//
+import Dept from "../database/Models/department";
+
+// ============= Services ===============//
+import { isAuthenticated, isAdmin } from "./middleware";
+import { pubsub } from "../subscription";
+import { UserTopics } from "../subscription/events/user";
+
+export default {
   Query: {
     depts: combineResolvers(isAuthenticated, isAdmin, async () => {
       try {
@@ -17,6 +22,7 @@ module.exports = {
         throw error;
       }
     }),
+
     dept: combineResolvers(isAuthenticated, async (_, { id }) => {
       try {
         const dept = await Dept.findById(id);
@@ -30,6 +36,7 @@ module.exports = {
       }
     })
   },
+
   Mutation: {
     createDept: combineResolvers(
       isAuthenticated,
@@ -46,9 +53,10 @@ module.exports = {
       }
     )
   },
+
   Subscription: {
     deptCreated: {
-      subscribe: () => PubSub.asyncIterator(userEvents.USER_CREATED)
+      subscribe: () => pubsub.asyncIterator(UserTopics.USER_CREATED)
     }
   }
 };

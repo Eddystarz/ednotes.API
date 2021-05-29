@@ -1,14 +1,14 @@
-const { skip } = require("graphql-resolvers");
-const User = require("../../database/Models/user");
+import { skip } from "graphql-resolvers";
+import User from "../../database/Models/user";
 
-module.exports.isAuthenticated = (_, __, { email }) => {
+export const isAuthenticated = (_, __, { email }) => {
   if (!email) {
     throw new Error("Access Denied!Please login to continue");
   }
   return skip;
 };
 
-module.exports.isAdmin = async (_, __, { loggedInUserId }) => {
+export const isAdmin = async (_, __, { loggedInUserId }) => {
   try {
     const user = await User.findOne({ _id: loggedInUserId });
     if (user.isAdmin !== true) {
@@ -21,7 +21,7 @@ module.exports.isAdmin = async (_, __, { loggedInUserId }) => {
   }
 };
 
-module.exports.isSuperAdmin = async (_, __, { loggedInUserId }) => {
+export const isSuperAdmin = async (_, __, { loggedInUserId }) => {
   try {
     const user = await User.findOne({ _id: loggedInUserId });
     if (user.isSuperAdmin !== true && user.isAdmin !== true) {

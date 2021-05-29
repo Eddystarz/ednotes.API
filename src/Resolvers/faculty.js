@@ -1,27 +1,29 @@
-const { combineResolvers } = require("graphql-resolvers");
-const { isAuthenticated } = require("./middleware");
-const { isAdmin } = require("./middleware");
-const Faculty = require("../database/Models/faculty");
+import { combineResolvers } from "graphql-resolvers";
 
-module.exports = {
+// ========== Models ==============//
+import Faculty from "../database/Models/faculty";
+
+// ============= Services ===============//
+import { isAuthenticated, isAdmin } from "./middleware";
+import { pubsub } from "../subscription";
+import { UserTopics } from "../subscription/events/user";
+
+export default {
   Query: {
-    faculties: combineResolvers(
-      isAuthenticated,
-      isAdmin,
-      async (_, __, ___) => {
-        try {
-          const faculties = await Faculty.find();
-          if (!faculties) {
-            throw new Error("Schools not found!");
-          }
-          return faculties;
-        } catch (error) {
-          console.log(error);
-          throw error;
+    faculties: combineResolvers(isAuthenticated, isAdmin, async () => {
+      try {
+        const faculties = await Faculty.find();
+        if (!faculties) {
+          throw new Error("Schools not found!");
         }
+        return faculties;
+      } catch (error) {
+        console.log(error);
+        throw error;
       }
-    ),
-    faculty: combineResolvers(isAuthenticated, async (_, { id }, ___) => {
+    }),
+
+    faculty: combineResolvers(isAuthenticated, async (_, { id }) => {
       try {
         const faculty = await Faculty.findById(id);
         if (!faculty) {
@@ -34,6 +36,7 @@ module.exports = {
       }
     })
   },
+
   Mutation: {
     createFaculty: combineResolvers(
       isAuthenticated,
@@ -50,9 +53,10 @@ module.exports = {
       }
     )
   },
+
   Subscription: {
     userCreated: {
-      subscribe: () => PubSub.asyncIterator(userEvents.USER_CREATED)
+      subscribe: () => pubsub.asyncIterator(UserTopics.USER_CREATED)
     }
   }
 };
