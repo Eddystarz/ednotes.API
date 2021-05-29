@@ -1,30 +1,30 @@
-const {gql} = require('apollo-server-express')
+const { gql } = require("apollo-server-express");
 module.exports = gql`
- extend type Query {
+  extend type Query {
     dept(id: ID!): Dept
     depts: [Dept]
- }
- 
- extend type Mutation{
-    createDept(input: deptInput): Dept
- }
- 
- input deptInput {
-     school: String!
-     name:String!
-     faculty: String!
-     description: String!
- }
+  }
 
- type Dept {
-    id : ID!
+  extend type Mutation {
+    createDept(input: deptInput): Dept
+  }
+
+  input deptInput {
+    school: String!
+    name: String!
+    faculty: String!
+    description: String!
+  }
+
+  type Dept {
+    id: ID!
     school: String!
     faculty: String!
-    name:String!
+    name: String!
     description: String!
-}
+  }
 
- extend type Subscription {
-     deptCreated: Dept
- }
-`
+  extend type Subscription {
+    deptCreated: Dept
+  }
+`;

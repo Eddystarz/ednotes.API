@@ -1,10 +1,5 @@
 const express = require("express");
-const {
-  ApolloServer,
-  gql,
-  AddArgumentsAsVariables
-} = require("apollo-server-express");
-const fs = require("fs");
+const { ApolloServer } = require("apollo-server-express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
@@ -13,9 +8,8 @@ const { verifyUser } = require("./helper/context");
 const resolvers = require("./Resolvers");
 const typeDefs = require("./typeDefs");
 
-const { keys } = require("./typeDefs");
 dotenv.config();
-//db connectivity
+// db connectivity
 connection();
 
 const app = express();
@@ -28,13 +22,13 @@ const server = new ApolloServer({
   playground: true,
   typeDefs,
   resolvers,
-  context: async ({ req, connection }) => {
-    //if we want to get something as a per request basis then we declare context func
+  context: async ({ req }) => {
+    // if we want to get something as a per request basis then we declare context func
     const contextObj = {};
     if (req) {
       await verifyUser(req);
-      (contextObj.email = req.email),
-        (contextObj.loggedInUserId = req.loggedInUserId);
+      contextObj.email = req.email;
+      contextObj.loggedInUserId = req.loggedInUserId;
     }
     return contextObj;
   },
@@ -50,7 +44,7 @@ server.applyMiddleware({ app, path });
 
 const PORT = process.env.PORT;
 
-app.use("/", (req, res, next) => {
+app.use("/", (req, res) => {
   res.send({ message: "Hello" });
 });
 const httpServer = app.listen(PORT, () => {
