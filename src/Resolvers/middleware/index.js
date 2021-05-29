@@ -1,45 +1,38 @@
+const { skip } = require("graphql-resolvers");
+const User = require("../../database/Models/user");
 
-const {skip} = require('graphql-resolvers')
-// const Task = require('../../database/Models/task')
-const User = require('../../database/Models/user')
-const {isValidObjectId} = require('../../database/util')
+module.exports.isAuthenticated = (_, __, { email }) => {
+  if (!email) {
+    throw new Error("Access Denied!Please login to continue");
+  }
+  return skip;
+};
 
-module.exports.isAuthenticated = (_, __, {email}) => {
-    if(!email) {
-        throw new Error('Access Denied!Please login to continue')
+module.exports.isAdmin = async (_, __, { loggedInUserId }) => {
+  try {
+    const user = await User.findOne({ _id: loggedInUserId });
+    if (user.isAdmin !== true) {
+      throw new Error("Not Authorized to perform this action");
     }
-    return skip
-}
+    return skip;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 
-module.exports.isAdmin = async (_,__, {loggedInUserId}) => {
-    try {
-        const user =  await User.findOne({ _id: loggedInUserId })
-        if (user.isAdmin != true){
-            throw new Error('Not Authorized to perform this action')
-        }
-        return skip
-        
-    } catch (error) {
-        console.log(error)
-        throw error
+module.exports.isSuperAdmin = async (_, __, { loggedInUserId }) => {
+  try {
+    const user = await User.findOne({ _id: loggedInUserId });
+    if (user.isSuperAdmin !== true && user.isAdmin !== true) {
+      throw new Error("Not Authorized to perform this action");
     }
-
-}
-
-module.exports.isSuperAdmin = async (_,__, {loggedInUserId}) => {
-    try {
-        const user =  await User.findOne({ _id: loggedInUserId })
-        if (user.isSuperAdmin != true && user.isAdmin != true ){
-            throw new Error('Not Authorized to perform this action')
-        }
-        return skip
-        
-    } catch (error) {
-        console.log(error)
-        throw error
-    }
-
-}
+    return skip;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 // module.exports.isTaskOwner = async (_,{ id }, {loggedInUserId}) => {
 //     try {
 //         if(!isValidObjectId(id)){
