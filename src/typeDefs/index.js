@@ -1,11 +1,11 @@
-const { gql } = require("apollo-server-express");
+import { gql } from "apollo-server-express";
 
-const userTypeDefs = require("./user");
-const schoolTypeDefs = require("./school");
-const facultyTypeDefs = require("./faculty");
-const deptTypeDefs = require("./dept");
-const levelTypeDefs = require("./level");
-const studentTypeDefs = require("./student");
+import userTypeDefs from "./user";
+import schoolTypeDefs from "./school";
+import facultyTypeDefs from "./faculty";
+import deptTypeDefs from "./dept";
+import levelTypeDefs from "./level";
+import studentTypeDefs from "./student";
 
 const typeDefs = gql`
   scalar Date
@@ -21,7 +21,7 @@ const typeDefs = gql`
   }
 `;
 
-module.exports = [
+export default [
   typeDefs,
   userTypeDefs,
   schoolTypeDefs,

@@ -1,5 +1,5 @@
-const nodemailer = require("nodemailer");
-const nodemailerSendgrid = require("nodemailer-sendgrid");
+import nodemailer from "nodemailer";
+import nodemailerSendgrid from "nodemailer-sendgrid";
 
 const auth = {
   auth: {
@@ -10,7 +10,7 @@ const auth = {
 
 const transporter = nodemailer.createTransport(nodemailerSendgrid(auth));
 
-const sendMail = (email, subject, text, html) => {
+export const sendMail = (email, subject, text, html) => {
   const mailOptions = {
     from: "YOUR_EMAIL_HERE@gmail.com", // TODO replace this with your own email
     to: email, // TODO: the receiver email has to be authorized for the free tier
@@ -28,5 +28,3 @@ const sendMail = (email, subject, text, html) => {
       console.log("Email not sent");
     });
 };
-
-module.exports = sendMail;

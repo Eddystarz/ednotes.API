@@ -1,5 +1,5 @@
-const userEvents = require("./user");
+import userEvents from "./user";
 
-module.exports = {
+export default {
   userEvents
 };

@@ -1,14 +1,15 @@
-const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
-const cors = require("cors");
-const dotenv = require("dotenv");
+import express from "express";
+import { ApolloServer } from "apollo-server-express";
+import cors from "cors";
+import { config } from "dotenv";
 
-const { connection } = require("./database/util");
-const { verifyUser } = require("./helper/context");
-const resolvers = require("./Resolvers");
-const typeDefs = require("./typeDefs");
+import { connection } from "./database/util";
+import { verifyUser } from "./helper/context";
+import resolvers from "./Resolvers";
+import typeDefs from "./typeDefs";
 
-dotenv.config();
+config();
+
 // db connectivity
 connection();
 
@@ -47,6 +48,7 @@ const PORT = process.env.PORT;
 app.use("/", (req, res) => {
   res.send({ message: "Hello" });
 });
+
 const httpServer = app.listen(PORT, () => {
   console.log(`Server listening on PORT: ${PORT}`);
   console.log(`Graphql Endpoint: ${server.graphqlPath}`);

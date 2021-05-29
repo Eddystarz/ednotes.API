@@ -1,18 +1,21 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema } from "mongoose";
 
-const facultySchema = new mongoose.Schema({
-  school: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "School"
+const facultySchema = new Schema(
+  {
+    school: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "School"
+    },
+    name: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      required: true
+    }
   },
-  name: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  }
-});
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("Faculty", facultySchema);
+export default mongoose.model("Dept", facultySchema);

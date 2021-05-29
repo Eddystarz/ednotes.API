@@ -1,5 +1,6 @@
-const { gql } = require("apollo-server-express");
-module.exports = gql`
+import { gql } from "apollo-server-express";
+
+export default gql`
   extend type Query {
     student: Student
     students: [Student]
