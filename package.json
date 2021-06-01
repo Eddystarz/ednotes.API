@@ -5,14 +5,25 @@
   "main": "server.js",
   "scripts": {
     "migrate": " sequelize db:migrate",
-    "dev": "nodemon server",
-    "start": "node server.js",
+    "clean": "rm -rf build && mkdir build",
+    "dev": "NODE_ENV=development babel-watch ./src/index.js",
+    "start": "NODE_ENV=production pm2 start --name 'coyani' build/index.js",
+    "staging": "NODE_ENV=staging pm2 start --name 'coyani' build/index.js",
+    "build": "npm run clean && npm run build-server",
+    "build-server": "babel -d ./build ./src -s",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "DAABS",
   "license": "MIT",
   "dependencies": {
+    "@babel/cli": "^7.14.3",
+    "@babel/core": "^7.14.3",
+    "@babel/node": "^7.14.2",
+    "@babel/plugin-transform-runtime": "^7.14.3",
+    "@babel/preset-env": "^7.14.4",
+    "@babel/runtime": "^7.14.0",
     "apollo-server-express": "^2.19.2",
+    "babel-watch": "^7.4.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -29,6 +40,17 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "eslint": "^7.27.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-node": "^4.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.3",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.3.0"
   }
 }
