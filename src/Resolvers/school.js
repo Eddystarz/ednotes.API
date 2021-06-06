@@ -10,7 +10,7 @@ import { UserTopics } from "../subscription/events/user";
 
 export default {
   Query: {
-    schools: combineResolvers(isAuthenticated, isAdmin, async () => {
+    schools: combineResolvers(  async () => {
       try {
         const schools = await School.find();
         if (!schools) {
@@ -23,7 +23,7 @@ export default {
       }
     }),
 
-    school: combineResolvers(isAuthenticated, async (_, { id }) => {
+    school: combineResolvers( async (_, { id }) => {
       try {
         const school = await School.findById(id);
         if (!school) {
