@@ -29,7 +29,7 @@ const graphQlServer = async (app, PORT) => {
     },
     formatError: (error) => {
       return {
-        message: error.message
+        message: error
       };
     }
   });

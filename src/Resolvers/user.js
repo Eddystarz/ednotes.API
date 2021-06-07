@@ -69,7 +69,7 @@ export default {
         });
         const subject = "Email Confirmation";
         const url = "localhost";
-        const links = `http://${url}/confirmation/${user.email}/${token.token}`;
+        const links = `http://${url}/confirmation/${result.email}/${token.token}`;
         const text = "";
 
         const html = `
