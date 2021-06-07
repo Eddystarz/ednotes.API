@@ -10,7 +10,7 @@ import { UserTopics } from "../subscription/events/user";
 
 export default {
   Query: {
-    depts: combineResolvers(isAuthenticated, isAdmin, async () => {
+    depts: combineResolvers( async () => {
       try {
         const depts = await Dept.find();
         if (!depts) {
@@ -23,7 +23,7 @@ export default {
       }
     }),
 
-    dept: combineResolvers(isAuthenticated, async (_, { id }) => {
+    dept: combineResolvers( async (_, { id }) => {
       try {
         const dept = await Dept.findById(id);
         if (!dept) {
