@@ -1,25 +1,25 @@
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
 
-import User from "../../database/Models/user";
+// import User from "../../database/Models/user";
 
 config();
 
-export const verifyUser = async (req) => {
+// Auth function to verify logged in user
+export const verifyUser = async (req_header) => {
   try {
-    req.email = null;
-    req.loggedInUserId = null;
+    if (req_header) {
+      const token = req_header.split(" ")[1];
 
-    const bearerHeader = req.headers.authorization;
-    if (bearerHeader) {
-      const token = bearerHeader.split(" ")[1];
-      const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      req.email = payload.email;
-      const user = await User.findOne({ email: payload.email });
-      req.loggedInUserId = user.id;
+      if (token) {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+        return decodedToken;
+      }
+      return null;
     }
-  } catch (error) {
-    console.log(error);
-    throw error;
+    return null;
+  } catch (err) {
+    return null;
   }
 };
