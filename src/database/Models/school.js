@@ -13,7 +13,25 @@ const schoolSchema = new Schema(
     location: {
       type: String,
       required: true
-    }
+    },
+    faculties: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Faculty"
+      }
+    ],
+    departments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Dept"
+      }
+    ],
+    levels: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Level"
+      }
+    ]
   },
   { timestamps: true }
 );

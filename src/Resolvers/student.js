@@ -82,5 +82,14 @@ export default {
     levelCreated: {
       subscribe: () => pubsub.asyncIterator(UserTopics.USER_CREATED)
     }
+  },
+
+  // Type relations to get data for other types when quering for students
+  Student: {
+    user: (_) => User.findById(_.user),
+    school: (_) => School.findById(_.school),
+    faculty: (_) => Faculty.findById(_.faculty),
+    dept: (_) => Dept.findById(_.dept),
+    level: (_) => Dept.findById(_.level)
   }
 };

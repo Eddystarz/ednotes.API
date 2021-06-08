@@ -3,6 +3,7 @@ import { gql } from "apollo-server-express";
 export default gql`
   extend type Query {
     student: Student
+
     students: [Student]
   }
 
@@ -18,29 +19,31 @@ export default gql`
     password: String!
     phoneNumber: String!
     state: String!
-    school: String
-    faculty: String
-    dept: String
-    level: String
+    school: ID!
+    faculty: ID!
+    dept: ID!
+    level: ID!
   }
+
   input editStudentInput {
-    firstName: String!
-    lastName: String!
-    email: String!
+    firstName: String
+    lastName: String
+    email: String
   }
 
   type Student {
-    id: ID!
-    user: String!
+    _id: ID!
+    user: User!
     phoneNumber: String!
     state: String!
-    school: String!
-    faculty: String!
-    dept: String!
-    level: String!
+    school: School!
+    faculty: Faculty!
+    dept: Dept!
+    level: Level!
     createdAt: Date!
     updatedAt: Date!
   }
+
   extend type Subscription {
     studentCreated: Student
   }

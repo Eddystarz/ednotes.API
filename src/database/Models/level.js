@@ -17,7 +17,13 @@ const levelSchema = new Schema(
     name: {
       type: String,
       required: true
-    }
+    },
+    students: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Student"
+      }
+    ]
   },
   { timestamps: true }
 );

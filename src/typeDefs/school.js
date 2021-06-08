@@ -15,12 +15,17 @@ export default gql`
     description: String!
     location: String!
   }
+
   type School {
-    id: ID!
+    _id: ID!
     name: String!
     description: String!
     location: String!
+    faculties: [Faculty]
+    departments: [Dept]
+    levels: [Level]
   }
+
   extend type Subscription {
     schoolCreated: School
   }
