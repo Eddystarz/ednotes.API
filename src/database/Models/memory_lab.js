@@ -1,23 +1,22 @@
-const mongoose = require('mongoose')
+import mongoose, { Schema } from "mongoose";
 
 const memoryLabSchema = new mongoose.Schema({
-    course: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Course'
-    },
-    courseTopic: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'CourseTopic'
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    text: {
-        type: String,
-        required: true
-    },
+  course: {
+    type: Schema.Types.ObjectId,
+    ref: "Course"
+  },
+  courseTopic: {
+    type: Schema.Types.ObjectId,
+    ref: "CourseTopic"
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  text: {
+    type: String,
+    required: true
+  }
+});
 
-})
-
-module.exports = mongoose.model('MemoryLab', memoryLabSchema)
+export default mongoose.model("'MemoryLab", memoryLabSchema);

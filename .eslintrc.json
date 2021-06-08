@@ -58,6 +58,7 @@
     "no-multi-spaces": "warn",
     "prefer-destructuring": "off",
     "space-before-blocks": "warn",
-    "keyword-spacing": "warn"
+    "keyword-spacing": "warn",
+    "space-in-parens": "warn"
   }
 }

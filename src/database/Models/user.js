@@ -38,14 +38,6 @@ const userSchema = new Schema(
     userType: {
       type: String,
       enum: ["user", "admin", "super_admin"]
-    },
-    isAdmin: {
-      type: Boolean,
-      default: false
-    },
-    isSuperAdmin: {
-      type: Boolean,
-      default: false
     }
   },
   {
@@ -63,15 +55,33 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods = {
+  // Sign token for email verification
+  emailToken: function () {
+    return jwt.sign(
+      { userId: this._id, userType: this.userType },
+      process.env.EMAIL_SECRET,
+      {
+        expiresIn: "7d"
+      }
+    );
+  },
+
   // Sign token for user authorization
   jwtToken: function () {
     return jwt.sign(
       { userId: this._id, userType: this.userType },
       process.env.JWT_SECRET_KEY,
       {
-        expiresIn: "1d"
+        expiresIn: "30d"
       }
     );
+  },
+
+  // Sign token for forgot password
+  passwordToken: function () {
+    return jwt.sign({ userId: this._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "30m"
+    });
   },
 
   // Hash Password

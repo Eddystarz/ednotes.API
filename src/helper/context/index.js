@@ -1,8 +1,6 @@
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
 
-// import User from "../../database/Models/user";
-
 config();
 
 // Auth function to verify logged in user

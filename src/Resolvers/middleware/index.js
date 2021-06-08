@@ -7,6 +7,13 @@ export const isAuthenticated = (_, __, { logged_in_user }) =>
     ? skip
     : new AuthenticationError("Access Denied! Please login to continue");
 
+// Protection for regular users
+export const isUser = combineResolvers(isAuthenticated, (_, __, { userType }) =>
+  userType === "user"
+    ? skip
+    : new AuthenticationError("Not Authorized to perform this action")
+);
+
 // Protection for Admin previlages
 export const isAdmin = combineResolvers(
   isAuthenticated,

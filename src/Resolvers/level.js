@@ -10,7 +10,7 @@ import { UserTopics } from "../subscription/events/user";
 
 export default {
   Query: {
-    levels: combineResolvers( async () => {
+    levels: combineResolvers(async () => {
       try {
         const levels = await Level.find();
         if (!levels) {
@@ -23,7 +23,7 @@ export default {
       }
     }),
 
-    level: combineResolvers( async (_, { id }) => {
+    level: combineResolvers(async (_, { id }) => {
       try {
         const level = await Level.findById(id);
         if (!level) {

@@ -14,7 +14,7 @@ import { isAuthenticated, isAdmin } from "./middleware";
 import { pubsub } from "../subscription";
 import { UserTopics } from "../subscription/events/user";
 
-module.exports = {
+export default {
   Query: {
     students: combineResolvers(isAuthenticated, isAdmin, async () => {
       try {
