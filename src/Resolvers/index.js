@@ -7,6 +7,7 @@ import facultyResolver from "./faculty";
 import deptResolver from "./dept";
 import levelResolver from "./level";
 import studentResolver from "./student";
+import newsResolver from "./news";
 
 const customDateScalarResolver = {
   Date: GraphQLDateTime
@@ -19,5 +20,6 @@ export default [
   deptResolver,
   levelResolver,
   studentResolver,
+  newsResolver,
   customDateScalarResolver
 ];

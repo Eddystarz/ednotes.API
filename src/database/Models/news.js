@@ -14,7 +14,7 @@ const newsSchema = new Schema(
     },
     category: {
       type: String,
-      enum: ["school", "dept", "faculty"]
+      enum: ["school", "dept", "faculty", "level"]
     },
     creator: {
       type: Schema.Types.ObjectId,
@@ -32,6 +32,10 @@ const newsSchema = new Schema(
     dept: {
       type: Schema.Types.ObjectId,
       ref: "Dept"
+    },
+    level: {
+      type: Schema.Types.ObjectId,
+      ref: "Level"
     }
   },
   { timestamps: true }

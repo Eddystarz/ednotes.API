@@ -7,6 +7,7 @@ import deptTypeDefs from "./dept";
 import levelTypeDefs from "./level";
 import studentTypeDefs from "./student";
 import newsTypeDefs from "./news";
+import genericTypeDefs from "./generic";
 
 const typeDefs = gql`
   scalar Date
@@ -30,5 +31,6 @@ export default [
   deptTypeDefs,
   levelTypeDefs,
   studentTypeDefs,
-  newsTypeDefs
+  newsTypeDefs,
+  genericTypeDefs
 ];
