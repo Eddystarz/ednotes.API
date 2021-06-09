@@ -11,6 +11,13 @@ export default gql`
     Admin fetch news they created..Cursor and limit are for pagination
     """
     my_created_news(cursor: String, limit: Int): NewsConnection!
+
+    """
+    This query returns for a logged in student all news articles related to either
+    school, faculty, dept or level they are in...The category field can be used on
+    the front end to filter news if it is to be displayed by sections(school, dept level..etc)
+    """
+    student_related_articles(cursor: String, limit: Int): NewsConnection!
   }
 
   extend type Mutation {

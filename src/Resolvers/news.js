@@ -7,9 +7,10 @@ import School from "../database/Models/school";
 import Faculty from "../database/Models/faculty";
 import Dept from "../database/Models/department";
 import News from "../database/Models/news";
+import Student from "../database/Models/student";
 
 // ============= Services ===============//
-import { isAdmin, isAuthenticated } from "./middleware";
+import { isAdmin, isAuthenticated, isStudent } from "./middleware";
 import { pubsub } from "../subscription";
 import { UserTopics } from "../subscription/events/user";
 import { processUpload } from "../helper/file_uploads";
@@ -98,6 +99,112 @@ export default {
           );
         } catch (error) {
           throw error;
+        }
+      }
+    ),
+
+    student_related_articles: combineResolvers(
+      isStudent,
+      async (_, { cursor, limit }, { Id }) => {
+        try {
+          const student = await Student.findOne({ user: Id });
+
+          if (!student) {
+            throw new ApolloError("Student not found");
+          }
+
+          let news;
+
+          if (cursor) {
+            news = await News.find({
+              $or: [
+                {
+                  category: "school",
+                  school: student.school,
+                  createdAt: { $lt: cursor }
+                },
+                {
+                  category: "faculty",
+                  faculty: student.faculty,
+                  createdAt: { $lt: cursor }
+                },
+                {
+                  category: "dept",
+                  dept: student.dept,
+                  createdAt: { $lt: cursor }
+                },
+                {
+                  category: "level",
+                  level: student.level,
+                  createdAt: { $lt: cursor }
+                }
+              ]
+            })
+              .limit(limit + 1)
+              .sort({ createdAt: -1 });
+
+            if (news.length === 0) {
+              return {
+                edges: news
+              };
+            } else if (news.length > 0) {
+              const hasNextPage = news.length > limit;
+              const edges = hasNextPage ? news.slice(0, -1) : news;
+
+              return {
+                edges,
+                pageInfo: {
+                  hasNextPage,
+                  endCursor: edges[edges.length - 1].createdAt
+                }
+              };
+            }
+          } else {
+            news = await News.find({
+              $or: [
+                {
+                  category: "school",
+                  school: student.school
+                },
+                {
+                  category: "faculty",
+                  faculty: student.faculty
+                },
+                {
+                  category: "dept",
+                  dept: student.dept
+                },
+                {
+                  category: "level",
+                  level: student.level
+                }
+              ]
+            })
+              .limit(limit + 1)
+              .sort({ createdAt: -1 });
+
+            if (news.length === 0) {
+              return {
+                edges: news
+              };
+            } else if (news.length > 0) {
+              const hasNextPage = news.length > limit;
+              const edges = hasNextPage ? news.slice(0, -1) : news;
+
+              return {
+                edges,
+                pageInfo: {
+                  hasNextPage,
+                  endCursor: edges[edges.length - 1].createdAt
+                }
+              };
+            }
+          }
+          throw new ApolloError(
+            "Something went wrong while trying to fetch news articles"
+          );
+        } catch (err) {
+          throw err;
         }
       }
     )
