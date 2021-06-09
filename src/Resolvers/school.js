@@ -1,3 +1,4 @@
+import { ApolloError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
@@ -16,9 +17,11 @@ export default {
     schools: combineResolvers(isAdmin, async () => {
       try {
         const schools = await School.find();
+
         if (!schools) {
-          throw new Error("Schools not found!");
+          throw new ApolloError("Schools not found!");
         }
+
         return schools;
       } catch (error) {
         console.log(error);
@@ -29,12 +32,13 @@ export default {
     school: combineResolvers(isAdmin, async (_, { id }) => {
       try {
         const school = await School.findById(id);
+
         if (!school) {
-          throw new Error("School not found!");
+          throw new ApolloError("School not found!");
         }
+
         return school;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     })
@@ -43,9 +47,9 @@ export default {
   Mutation: {
     createSchool: combineResolvers(isAdmin, async (_, { input }, { Id }) => {
       try {
-        console.log("hello");
-        const school = School({ created_by: Id, ...input });
+        const school = new School({ created_by: Id, ...input });
         const result = await school.save();
+
         return result;
       } catch (error) {
         throw error;

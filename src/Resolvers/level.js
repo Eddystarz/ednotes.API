@@ -1,11 +1,12 @@
+import { ApolloError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
 import Level from "../database/Models/level";
+import User from "../database/Models/user";
 import School from "../database/Models/school";
 import Faculty from "../database/Models/faculty";
 import Dept from "../database/Models/department";
-import Student from "../database/Models/student";
 
 // ============= Services ===============//
 import { isAdmin } from "./middleware";
@@ -18,7 +19,7 @@ export default {
       try {
         const levels = await Level.find();
         if (!levels) {
-          throw new Error("Levels not found!");
+          throw new ApolloError("Levels not found!");
         }
         return levels;
       } catch (error) {
@@ -31,7 +32,7 @@ export default {
       try {
         const level = await Level.findById(id);
         if (!level) {
-          throw new Error("Level not found!");
+          throw new ApolloError("Level not found!");
         }
         return level;
       } catch (error) {
@@ -44,11 +45,15 @@ export default {
   Mutation: {
     createLevel: combineResolvers(isAdmin, async (_, { input }) => {
       try {
-        const level = Level({ ...input });
+        const level = new Level({ ...input });
         const result = await level.save();
+
+        await School.findByIdAndUpdate(input.school, {
+          $addToSet: { levels: result._id }
+        });
+
         return result;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     })
@@ -65,6 +70,6 @@ export default {
     school: (_) => School.findById(_.school),
     faculty: (_) => Faculty.findById(_.faculty),
     dept: (_) => Dept.findById(_.dept),
-    students: (_) => Student.find({ _id: _.students })
+    students: (_) => User.find({ _id: _.students })
   }
 };

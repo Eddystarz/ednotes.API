@@ -78,6 +78,10 @@ export default {
 
         const result_student = await newStudent.save();
 
+        await Level.findByIdAndUpdate(input.level, {
+          $addToSet: { students: result_user._id }
+        });
+
         return {
           message: "Account created successfully",
           value: true,

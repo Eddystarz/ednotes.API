@@ -25,7 +25,7 @@ export default gql`
     dept: Dept!
     name: String!
     description: String!
-    students: [Student]
+    students: [User]
   }
 
   extend type Subscription {

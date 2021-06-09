@@ -1,3 +1,4 @@
+import { ApolloError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
@@ -15,7 +16,7 @@ export default {
       try {
         const faculties = await Faculty.find();
         if (!faculties) {
-          throw new Error("Schools not found!");
+          throw new ApolloError("Schools not found!");
         }
         return faculties;
       } catch (error) {
@@ -28,7 +29,7 @@ export default {
       try {
         const faculty = await Faculty.findById(id);
         if (!faculty) {
-          throw new Error("Faculty not found!");
+          throw new ApolloError("Faculty not found!");
         }
         return faculty;
       } catch (error) {
@@ -41,8 +42,13 @@ export default {
   Mutation: {
     createFaculty: combineResolvers(isAdmin, async (_, { input }) => {
       try {
-        const faculty = Faculty({ ...input });
+        const faculty = new Faculty({ ...input });
         const result = await faculty.save();
+
+        await School.findByIdAndUpdate(input.school, {
+          $addToSet: { faculties: result._id }
+        });
+
         return result;
       } catch (error) {
         console.log(error);

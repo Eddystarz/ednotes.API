@@ -1,3 +1,4 @@
+import { ApolloError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
@@ -16,11 +17,10 @@ export default {
       try {
         const depts = await Dept.find();
         if (!depts) {
-          throw new Error("Depts not found!");
+          throw new ApolloError("Depts not found!");
         }
         return depts;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     }),
@@ -29,11 +29,10 @@ export default {
       try {
         const dept = await Dept.findById(id);
         if (!dept) {
-          throw new Error("Dept not found!");
+          throw new ApolloError("Dept not found!");
         }
         return dept;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     })
@@ -42,11 +41,15 @@ export default {
   Mutation: {
     createDept: combineResolvers(isAdmin, async (_, { input }) => {
       try {
-        const dept = Dept({ ...input });
+        const dept = new Dept({ ...input });
         const result = await dept.save();
+
+        await School.findByIdAndUpdate(input.school, {
+          $addToSet: { departments: result._id }
+        });
+
         return result;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     })
