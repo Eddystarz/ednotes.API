@@ -14,6 +14,15 @@ export const isUser = combineResolvers(isAuthenticated, (_, __, { userType }) =>
     : new AuthenticationError("Not Authorized to perform this action")
 );
 
+// Protection for students
+export const isStudent = combineResolvers(
+  isAuthenticated,
+  (_, __, { userType }) =>
+    userType === "student"
+      ? skip
+      : new AuthenticationError("Not Authorized to perform this action")
+);
+
 // Protection for Admin previlages
 export const isAdmin = combineResolvers(
   isAuthenticated,

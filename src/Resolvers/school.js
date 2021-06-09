@@ -41,14 +41,13 @@ export default {
   },
 
   Mutation: {
-    createSchool: combineResolvers(isAdmin, async (_, { input }) => {
+    createSchool: combineResolvers(isAdmin, async (_, { input }, { Id }) => {
       try {
         console.log("hello");
-        const school = School({ ...input });
+        const school = School({ created_by: Id, ...input });
         const result = await school.save();
         return result;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     })

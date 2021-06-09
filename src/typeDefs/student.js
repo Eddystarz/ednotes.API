@@ -2,13 +2,16 @@ import { gql } from "apollo-server-express";
 
 export default gql`
   extend type Query {
+    """
+    Fetch logged in students profile
+    """
     student: Student
 
     students: [Student]
   }
 
   extend type Mutation {
-    studentSignup(input: studentSignupInput): Student
+    studentSignup(input: studentSignupInput): StudentStatus
   }
 
   input studentSignupInput {
@@ -29,6 +32,12 @@ export default gql`
     firstName: String
     lastName: String
     email: String
+  }
+
+  type StudentStatus {
+    message: String!
+    value: Boolean!
+    student: Student
   }
 
   type Student {

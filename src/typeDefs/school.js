@@ -21,6 +21,7 @@ export default gql`
     name: String!
     description: String!
     location: String!
+    created_by: User!
     faculties: [Faculty]
     departments: [Dept]
     levels: [Level]

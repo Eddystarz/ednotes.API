@@ -37,7 +37,7 @@ const userSchema = new Schema(
     },
     userType: {
       type: String,
-      enum: ["user", "admin", "super_admin"]
+      enum: ["user", "admin", "super_admin", "student"]
     }
   },
   {

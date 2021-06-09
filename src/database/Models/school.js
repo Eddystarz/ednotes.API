@@ -14,6 +14,10 @@ const schoolSchema = new Schema(
       type: String,
       required: true
     },
+    created_by: {
+      type: Schema.Types.ObjectId,
+      ref: "User"
+    },
     faculties: [
       {
         type: Schema.Types.ObjectId,
