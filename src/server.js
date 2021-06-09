@@ -3,6 +3,7 @@ import { config } from "dotenv";
 
 import { connection } from "./database/util";
 import { verifyUser } from "./helper/context";
+import { agenda } from "./services/agenda";
 import resolvers from "./Resolvers";
 import typeDefs from "./typeDefs";
 
@@ -11,6 +12,8 @@ config();
 const graphQlServer = async (app, PORT) => {
   // Connect to database
   connection();
+
+  agenda;
 
   const server = new ApolloServer({
     introspection: true,
