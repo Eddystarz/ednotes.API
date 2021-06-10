@@ -18,6 +18,8 @@ export default gql`
     the front end to filter news if it is to be displayed by sections(school, dept level..etc)
     """
     student_related_articles(cursor: String, limit: Int): NewsConnection!
+
+    test: String
   }
 
   extend type Mutation {

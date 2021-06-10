@@ -1,5 +1,6 @@
 import { ApolloError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
+import dayjs from "dayjs";
 
 // ========== Models ==============//
 import Level from "../database/Models/level";
@@ -14,6 +15,7 @@ import { isAdmin, isAuthenticated, isStudent } from "./middleware";
 import { pubsub } from "../subscription";
 import { UserTopics } from "../subscription/events/user";
 import { processUpload } from "../helper/file_uploads";
+import { agenda } from "../services/agenda";
 
 export default {
   Query: {
@@ -207,7 +209,23 @@ export default {
           throw err;
         }
       }
-    )
+    ),
+
+    test: async () => {
+      try {
+        const day = dayjs().add(2, "minutes").format();
+        // const day = dayjs().add(24, "hours").format();
+
+        agenda.schedule(day, "delete stories", {
+          name: "Great Chinex",
+          date: day
+        });
+
+        return "Ok";
+      } catch (err) {
+        throw err;
+      }
+    }
   },
 
   Mutation: {
