@@ -21,9 +21,14 @@ export default gql`
   }
 
   extend type Mutation {
-    createNews(
-      headline: String!
-      content: String!
+    createStory(
+      """
+      If the user wants to upload a text for the story
+      """
+      text: String
+      """
+      If the user wants to upload a file for the story
+      """
       file: Upload
       """
       this value MUST be either 'school', 'dept', 'faculty', 'level' depending on who the news
@@ -48,29 +53,18 @@ export default gql`
       level: ID
     ): NewsStatus
 
-    editNews(
-      newsId: ID!
-      headline: String
-      content: String
-      file: Upload
-    ): NewsStatus
-
-    """
-    "At no point is the deleted news data returned in this request
-    """
-    deleteNews(newsId: ID!): NewsStatus
+    deleteStory(storyId: ID!): StoryStatus
   }
 
-  type NewsStatus {
+  type StoryStatus {
     message: String!
     value: Boolean!
-    news: News
+    story: Story
   }
 
-  type News {
+  type Story {
     _id: ID!
-    headline: String!
-    content: String!
+    text: String
     image: String
     """
     this value is either 'school', 'dept', 'faculty', 'level' depending on who the news
@@ -96,8 +90,8 @@ export default gql`
     level: Level
   }
 
-  type NewsConnection {
-    edges: [News!]!
+  type StoryConnection {
+    edges: [Story!]!
     pageInfo: PageInfo
   }
 `;

@@ -1,5 +1,8 @@
 import Agenda from "agenda";
 
+// ============= CRON FUNCTIONS ===============//
+import { deleteStory } from "./jobs";
+
 const agenda = new Agenda({
   db: {
     address: process.env.MONGO_DB_URL,
@@ -19,8 +22,7 @@ agenda.define("delete stories", async (job) => {
     attrs: { data }
   } = job;
 
-  console.log(data.name);
-  console.log(data.date);
+  await deleteStory(data.id);
 });
 
 export { agenda };

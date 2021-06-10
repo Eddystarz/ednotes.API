@@ -1,5 +1,6 @@
 import { ApolloError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
+import dayjs from "dayjs";
 
 // ========== Models ==============//
 import Level from "../database/Models/level";
@@ -8,10 +9,12 @@ import Faculty from "../database/Models/faculty";
 import Dept from "../database/Models/department";
 import News from "../database/Models/news";
 import Student from "../database/Models/student";
+import Story from "../database/Models/edstory";
 
 // ============= Services ===============//
 import { isAdmin, isAuthenticated, isStudent } from "./middleware";
 import { processUpload } from "../helper/file_uploads";
+import { agenda } from "../services/agenda";
 
 export default {
   Query: {
@@ -209,71 +212,50 @@ export default {
   },
 
   Mutation: {
-    createNews: combineResolvers(isAdmin, async (_, args, { Id }) => {
+    createStory: combineResolvers(isAuthenticated, async (_, args, { Id }) => {
       try {
         if (args.file) {
           const uploadData = await processUpload(args.file);
 
-          const newNews = new News({
+          const newStory = new Story({
             image: uploadData.path,
             creator: Id,
             ...args
           });
 
-          const savedNews = await newNews.save();
+          const savedStory = await newStory.save();
+
+          const day = dayjs(savedStory.createdAt).add(24, "hours").format();
+
+          // Agenda Job to delete stories after 24 Hours
+          agenda.schedule(day, "delete stories", {
+            id: savedStory._id
+          });
 
           return {
-            message: "News article created successfully",
+            message: "Story created successfully",
             value: true,
-            news: savedNews
+            story: savedStory
           };
         } else {
-          const newNews = new News({
+          const newStory = new Story({
             creator: Id,
             ...args
           });
 
-          const savedNews = await newNews.save();
+          const savedStory = await newStory.save();
 
-          return {
-            message: "News article created successfully",
-            value: true,
-            news: savedNews
-          };
-        }
-      } catch (error) {
-        throw error;
-      }
-    }),
+          const day = dayjs(savedStory.createdAt).add(24, "hours").format();
 
-    editNews: combineResolvers(isAdmin, async (_, args) => {
-      try {
-        if (args.file) {
-          const uploadData = await processUpload(args.file);
-
-          const updateNews = await News.findByIdAndUpdate(
-            args.newsId,
-            {
-              image: uploadData.path,
-              ...args
-            },
-            { new: true }
-          );
-
-          return {
-            message: "News updated successfully",
-            value: true,
-            news: updateNews
-          };
-        } else {
-          const updateNews = await News.findByIdAndUpdate(args.newsId, args, {
-            new: true
+          // Agenda Job to delete stories after 24 Hours
+          agenda.schedule(day, "delete stories", {
+            id: savedStory._id
           });
 
           return {
-            message: "News updated successfully",
+            message: "Story created successfully",
             value: true,
-            news: updateNews
+            story: savedStory
           };
         }
       } catch (error) {
@@ -281,12 +263,12 @@ export default {
       }
     }),
 
-    deleteNews: combineResolvers(isAdmin, async (_, { newsId }) => {
+    deleteStory: combineResolvers(isAdmin, async (_, { storyId }) => {
       try {
-        await News.findByIdAndRemove(newsId);
+        await Story.findByIdAndRemove(storyId);
 
         return {
-          message: "News deleted successfully",
+          message: "Story deleted successfully",
           value: true
         };
       } catch (error) {
@@ -295,8 +277,8 @@ export default {
     })
   },
 
-  // Type relations to get data for other types when quering for news
-  News: {
+  // Type relations to get data for other types when quering for stories
+  Story: {
     school: (_) => School.findById(_.school),
     faculty: (_) => Faculty.findById(_.faculty),
     dept: (_) => Dept.findById(_.dept),
