@@ -7,6 +7,7 @@ import deptTypeDefs from "./dept";
 import levelTypeDefs from "./level";
 import studentTypeDefs from "./student";
 import newsTypeDefs from "./news";
+import storyTypeDefs from "./edstory";
 import genericTypeDefs from "./generic";
 
 const typeDefs = gql`
@@ -32,5 +33,6 @@ export default [
   levelTypeDefs,
   studentTypeDefs,
   newsTypeDefs,
+  storyTypeDefs,
   genericTypeDefs
 ];

@@ -2,22 +2,26 @@ import { gql } from "apollo-server-express";
 
 export default gql`
   extend type Query {
-    """
-    Fetch single news
-    """
-    get_single_news(newsId: ID!): NewsStatus
+    get_single_story(storyId: ID!): StoryStatus
 
     """
-    Admin fetch news they created..Cursor and limit are for pagination
+    Fetch stories created by a single user..Both admin and student
     """
-    my_created_news(cursor: String, limit: Int): NewsConnection!
+    my_stories(cursor: String, limit: Int): StoryConnection!
 
     """
-    This query returns for a logged in student all news articles related to either
+    This query returns for a logged in student all stories related to either
     school, faculty, dept or level they are in...The category field can be used on
     the front end to filter news if it is to be displayed by sections(school, dept level..etc)
     """
-    student_related_articles(cursor: String, limit: Int): NewsConnection!
+    student_related_stories(cursor: String, limit: Int): StoryConnection!
+
+    """
+    This query returns for a logged in admins all stories related to either
+    school, faculty, dept or level they created...The category field can be used on
+    the front end to filter news if it is to be displayed by sections(school, dept level..etc)
+    """
+    admin_related_stories(cursor: String, limit: Int): StoryConnection!
   }
 
   extend type Mutation {
@@ -51,7 +55,7 @@ export default gql`
       if the category field is not 'level' this field should be null
       """
       level: ID
-    ): NewsStatus
+    ): StoryStatus
 
     deleteStory(storyId: ID!): StoryStatus
   }

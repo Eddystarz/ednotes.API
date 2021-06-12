@@ -7,7 +7,6 @@ import Level from "../database/Models/level";
 import School from "../database/Models/school";
 import Faculty from "../database/Models/faculty";
 import Dept from "../database/Models/department";
-import News from "../database/Models/news";
 import Student from "../database/Models/student";
 import Story from "../database/Models/edstory";
 
@@ -18,15 +17,15 @@ import { agenda } from "../services/agenda";
 
 export default {
   Query: {
-    get_single_news: combineResolvers(
+    get_single_story: combineResolvers(
       isAuthenticated,
-      async (_, { newsId }) => {
+      async (_, { storyId }) => {
         try {
-          const news = await News.findById(newsId);
+          const story = await Story.findById(storyId);
 
-          if (!news) {
+          if (!story) {
             return {
-              message: "News not found",
+              message: "Story not found",
               value: false
             };
           }
@@ -34,7 +33,7 @@ export default {
           return {
             message: "Data found",
             value: true,
-            news
+            story
           };
         } catch (error) {
           throw error;
@@ -42,28 +41,28 @@ export default {
       }
     ),
 
-    // Admin fetch news they created
-    my_created_news: combineResolvers(
-      isAdmin,
+    // Fetch all stories created by a single individual..Admin/Student
+    my_stories: combineResolvers(
+      isAuthenticated,
       async (_, { cursor, limit }, { Id }) => {
         try {
-          let news;
+          let stories;
 
           if (cursor) {
-            news = await News.find({
+            stories = await Story.find({
               creator: Id,
               createdAt: { $lt: cursor }
             })
               .limit(limit + 1)
               .sort({ createdAt: -1 });
 
-            if (news.length === 0) {
+            if (stories.length === 0) {
               return {
-                edges: news
+                edges: stories
               };
-            } else if (news.length > 0) {
-              const hasNextPage = news.length > limit;
-              const edges = hasNextPage ? news.slice(0, -1) : news;
+            } else if (stories.length > 0) {
+              const hasNextPage = stories.length > limit;
+              const edges = hasNextPage ? stories.slice(0, -1) : stories;
 
               return {
                 edges,
@@ -74,17 +73,17 @@ export default {
               };
             }
           } else {
-            news = await News.find({ creator: Id })
+            stories = await Story.find({ creator: Id })
               .limit(limit + 1)
               .sort({ createdAt: -1 });
 
-            if (news.length === 0) {
+            if (stories.length === 0) {
               return {
-                edges: news
+                edges: stories
               };
-            } else if (news.length > 0) {
-              const hasNextPage = news.length > limit;
-              const edges = hasNextPage ? news.slice(0, -1) : news;
+            } else if (stories.length > 0) {
+              const hasNextPage = stories.length > limit;
+              const edges = hasNextPage ? stories.slice(0, -1) : stories;
 
               return {
                 edges,
@@ -96,7 +95,7 @@ export default {
             }
           }
           throw new ApolloError(
-            "Something went wrong while trying to fetch news articles"
+            "Something went wrong while trying to fetch stories"
           );
         } catch (error) {
           throw error;
@@ -104,7 +103,7 @@ export default {
       }
     ),
 
-    student_related_articles: combineResolvers(
+    student_related_stories: combineResolvers(
       isStudent,
       async (_, { cursor, limit }, { Id }) => {
         try {
@@ -114,10 +113,10 @@ export default {
             throw new ApolloError("Student not found");
           }
 
-          let news;
+          let stories;
 
           if (cursor) {
-            news = await News.find({
+            stories = await Story.find({
               $or: [
                 {
                   category: "school",
@@ -144,13 +143,13 @@ export default {
               .limit(limit + 1)
               .sort({ createdAt: -1 });
 
-            if (news.length === 0) {
+            if (stories.length === 0) {
               return {
-                edges: news
+                edges: stories
               };
-            } else if (news.length > 0) {
-              const hasNextPage = news.length > limit;
-              const edges = hasNextPage ? news.slice(0, -1) : news;
+            } else if (stories.length > 0) {
+              const hasNextPage = stories.length > limit;
+              const edges = hasNextPage ? stories.slice(0, -1) : stories;
 
               return {
                 edges,
@@ -161,7 +160,7 @@ export default {
               };
             }
           } else {
-            news = await News.find({
+            stories = await Story.find({
               $or: [
                 {
                   category: "school",
@@ -184,13 +183,13 @@ export default {
               .limit(limit + 1)
               .sort({ createdAt: -1 });
 
-            if (news.length === 0) {
+            if (stories.length === 0) {
               return {
-                edges: news
+                edges: stories
               };
-            } else if (news.length > 0) {
-              const hasNextPage = news.length > limit;
-              const edges = hasNextPage ? news.slice(0, -1) : news;
+            } else if (stories.length > 0) {
+              const hasNextPage = stories.length > limit;
+              const edges = hasNextPage ? stories.slice(0, -1) : stories;
 
               return {
                 edges,
@@ -202,7 +201,128 @@ export default {
             }
           }
           throw new ApolloError(
-            "Something went wrong while trying to fetch news articles"
+            "Something went wrong while trying to fetch stories"
+          );
+        } catch (err) {
+          throw err;
+        }
+      }
+    ),
+
+    admin_related_stories: combineResolvers(
+      isStudent,
+      async (_, { cursor, limit }, { Id }) => {
+        try {
+          const schools = await School.find({ created_by: Id });
+
+          const schoolIds = [];
+          const facultyIds = [];
+          const deptIds = [];
+          const levelIds = [];
+
+          schools.forEach((school) => {
+            schoolIds.push(school._id);
+            // Multiple annoying loops to get desired data structure for DB Query
+            schools.faculties.forEach((faculty) => {
+              facultyIds.push(faculty);
+            });
+            schools.dept.forEach((dep) => {
+              deptIds.push(dep);
+            });
+            schools.level.forEach((levels) => {
+              levelIds.push(levels);
+            });
+          });
+
+          let stories;
+
+          if (cursor) {
+            stories = await Story.find({
+              $or: [
+                {
+                  category: "school",
+                  school: schoolIds,
+                  createdAt: { $lt: cursor }
+                },
+                {
+                  category: "faculty",
+                  faculty: facultyIds,
+                  createdAt: { $lt: cursor }
+                },
+                {
+                  category: "dept",
+                  dept: deptIds,
+                  createdAt: { $lt: cursor }
+                },
+                {
+                  category: "level",
+                  level: levelIds,
+                  createdAt: { $lt: cursor }
+                }
+              ]
+            })
+              .limit(limit + 1)
+              .sort({ createdAt: -1 });
+
+            if (stories.length === 0) {
+              return {
+                edges: stories
+              };
+            } else if (stories.length > 0) {
+              const hasNextPage = stories.length > limit;
+              const edges = hasNextPage ? stories.slice(0, -1) : stories;
+
+              return {
+                edges,
+                pageInfo: {
+                  hasNextPage,
+                  endCursor: edges[edges.length - 1].createdAt
+                }
+              };
+            }
+          } else {
+            stories = await Story.find({
+              $or: [
+                {
+                  category: "school",
+                  school: schoolIds
+                },
+                {
+                  category: "faculty",
+                  faculty: facultyIds
+                },
+                {
+                  category: "dept",
+                  dept: deptIds
+                },
+                {
+                  category: "level",
+                  level: levelIds
+                }
+              ]
+            })
+              .limit(limit + 1)
+              .sort({ createdAt: -1 });
+
+            if (stories.length === 0) {
+              return {
+                edges: stories
+              };
+            } else if (stories.length > 0) {
+              const hasNextPage = stories.length > limit;
+              const edges = hasNextPage ? stories.slice(0, -1) : stories;
+
+              return {
+                edges,
+                pageInfo: {
+                  hasNextPage,
+                  endCursor: edges[edges.length - 1].createdAt
+                }
+              };
+            }
+          }
+          throw new ApolloError(
+            "Something went wrong while trying to fetch stories"
           );
         } catch (err) {
           throw err;
