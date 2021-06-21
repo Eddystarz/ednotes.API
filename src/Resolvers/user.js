@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import { ApolloError } from "apollo-server-express";
 import jwt from "jsonwebtoken";
 import { combineResolvers } from "graphql-resolvers";
 import { config } from "dotenv";
@@ -7,7 +7,7 @@ import { config } from "dotenv";
 import User from "../database/Models/user";
 
 // ============= Services ===============//
-import { isAuthenticated, isAdmin } from "./middleware";
+import { isAuthenticated, isAdmin, isUser, isSuperAdmin } from "./middleware";
 import { pubsub } from "../subscription";
 import { UserTopics } from "../subscription/events/user";
 import { sendMail } from "../services/email_service";
@@ -21,27 +21,26 @@ export default {
         const users = await User.find();
 
         if (!users) {
-          throw new Error("User not found!");
+          throw new ApolloError("User not found!");
         }
 
         return users;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     }),
 
-    user: combineResolvers(isAuthenticated, async (_, __, { email }) => {
+    // Logged in user profile
+    user: combineResolvers(isUser, async (_, __, { Id }) => {
       try {
-        const user = await User.findOne({ email });
+        const user = await User.findById(Id);
 
         if (!user) {
-          throw new Error("User not found!");
+          throw new ApolloError("User not found!");
         }
 
         return user;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     })
@@ -50,125 +49,154 @@ export default {
   Mutation: {
     signup: async (_, { input }) => {
       try {
-        const user = await User.findOne({ email: input.email });
+        const lowercase = input.email.toLowerCase();
+        const user = await User.findOne({ email: lowercase });
+
         if (user) {
-          throw new Error("Email already in use");
+          return {
+            message: "User with this email already exists",
+            value: false
+          };
         }
 
-        const hashedPassword = await bcrypt.hash(input.password, 12);
-        const newUser = new User({ ...input, password: hashedPassword });
+        const newUser = new User({
+          email: lowercase,
+          userType: "user",
+          ...input
+        });
         const result = await newUser.save();
 
         pubsub.publish(UserTopics.USER_CREATED, {
           [UserTopics.USER_CREATED]: result
         });
 
-        const secret = process.env.JWT_SECRET_KEY;
-        const token = await jwt.sign({ email: result.email }, secret, {
-          expiresIn: "1d"
-        });
+        const token = result.emailToken();
         const subject = "Email Confirmation";
         const url = "localhost";
-        const links = `http://${url}/confirmation/${user.email}/${token.token}`;
+        const links = `http://${url}/confirmation/${result.email}/${token.token}`;
         const text = "";
 
         const html = `
           Hello ${result.name}, <br /> Please verify your account by clicking the link: <a href="${links}"> </a>
           <br /> Thank You!
-      `;
+        `;
         sendMail(result.email, subject, text, html);
-        console.log(result.id, typeof result.id); // result.id virtual getter type string
-        console.log(result._id, typeof result._id); // underscore id type object
-        return result;
+
+        return {
+          message: "Account created successfully",
+          value: true,
+          user: result
+        };
       } catch (error) {
-        console.log(error);
         throw error;
       }
     },
 
     createSuperAdmin: async (_, { input }) => {
       try {
-        const user = await User.findOne({ email: input.email });
+        const lowercase = input.email.toLowerCase();
+        const user = await User.findOne({ email: lowercase });
 
         if (user) {
-          throw new Error("Email already in use");
+          return {
+            message: "User with this email already exists",
+            value: false
+          };
         }
 
-        const hashedPassword = await bcrypt.hash(input.password, 12);
         const newUser = new User({
-          ...input,
-          password: hashedPassword,
-          isAdmin: true,
-          isSuperAdmin: true,
-          isVerified: true
+          email: lowercase,
+          userType: "super_admin",
+          isVerified: true,
+          ...input
         });
 
         const result = await newUser.save();
+
         pubsub.publish(UserTopics.USER_CREATED, {
           [UserTopics.USER_CREATED]: result
         });
 
-        return result;
+        return {
+          message: "Account created successfully",
+          value: true,
+          user: result
+        };
       } catch (error) {
-        console.log(error);
         throw error;
       }
     },
 
     createAdmin: async (_, { input }) => {
       try {
-        const user = await User.findOne({ email: input.email });
+        const lowercase = input.email.toLowerCase();
+        const user = await User.findOne({ email: lowercase });
+
         if (user) {
-          throw new Error("Email already in use");
+          return {
+            message: "User with this email already exists",
+            value: false
+          };
         }
 
-        const hashedPassword = await bcrypt.hash(input.password, 12);
         const newUser = new User({
-          ...input,
-          password: hashedPassword,
-          isAdmin: true,
-          isVerified: true
+          email: lowercase,
+          userType: "admin",
+          isVerified: true,
+          ...input
         });
 
         const result = await newUser.save();
+
         pubsub.publish(UserTopics.USER_CREATED, {
           [UserTopics.USER_CREATED]: result
         });
 
-        return result;
+        return {
+          message: "Account created successfully",
+          value: true,
+          user: result
+        };
       } catch (error) {
-        console.log(error);
         throw error;
       }
     },
 
     login: async (_, { input }) => {
       try {
-        const user = await User.findOne({ email: input.email });
+        const lowercase = input.email.toLowerCase();
+        const user = await User.findOne({ email: lowercase });
+
         if (!user) {
-          throw new Error("User not found");
+          return {
+            message: "Incorrect login details",
+            value: false
+          };
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          input.password,
-          user.password
-        );
+        const isPasswordValid = user.verifyPass(input.password);
 
         if (!isPasswordValid) {
-          throw new Error("Incorrect Password");
+          return {
+            message: "Incorrect login details",
+            value: false
+          };
         }
 
-        const secret = process.env.JWT_SECRET_KEY;
-        const token = jwt.sign({ email: user.email }, secret, {
-          expiresIn: "1d"
-        });
-        return { token };
+        const token = user.jwtToken();
+
+        return {
+          message: token,
+          value: true,
+          user
+        };
       } catch (error) {
         console.log(error);
         throw error;
       }
     },
 
+    // @TODO: This should be a Rest API Endpoint Instead
     confirmEmail: async (_, { token }) => {
       try {
         jwt.verify(token, process.env.JWT_SECRET_KEY);
@@ -179,68 +207,173 @@ export default {
       }
     },
 
+    // User initiates change of password from forgot password
     forgotPassword: async (_, { email }) => {
       try {
-        const user = await User.findOne({ email: email });
+        const lowercase = email.toLowerCase();
+        const user = await User.findOne({ email: lowercase });
 
         if (!user) {
-          throw new Error("User not found");
+          return {
+            message: "User not found",
+            value: false
+          };
         }
 
-        const secret = process.env.JWT_SECRET_KEY;
-        const token = await jwt.sign({ email: user.email }, secret, {
-          expiresIn: "1d"
-        });
+        const token = user.passwordToken();
         const subject = "Password Reset";
         const url = "localhost";
         const text = "";
 
         const links = `http://${url}/confirmation/${user.email}/${token.token}`;
         const html = `
-          Hello ${user.name}, <br /> Please verify your account by clicking the link: <a href="${links}"> </a>
+          Hello ${user.name}, <br /> You are getting this mail because you have requested for a 
+          password reset. This password reset window is limited to twenty minutes. 
+          If you do not reset your password within twenty minutes, you will need to submit a new 
+          request. <br /> Please click on the link to Complete this process. 
+          <a href="${links}"> </a>
           <br /> Thank You!
         `;
+
         sendMail(user.email, subject, text, html);
+
+        return {
+          message: "Please check your email to complete this process",
+          value: true
+        };
       } catch (error) {
-        console.log(error);
         throw error;
       }
     },
 
-    resetPassword: async (_, { input }) => {
+    // Change password from forgot password...(Public route)
+    changePassword: async (
+      _,
+      { pass_token, email, new_password, confirm_password }
+    ) => {
       try {
-        // Nothing here yet
-        console.log(input);
-      } catch (error) {
-        console.log(error);
-        throw error;
+        const lowercase = email.toLowerCase();
+        const user = await User.findOne({ email: lowercase });
+
+        if (!user) {
+          return {
+            message: "User not found",
+            value: false
+          };
+        }
+
+        const verify = jwt.verify(pass_token, process.env.JWT_SECRET_KEY);
+
+        if (!verify) {
+          return {
+            message: "Password reset expired",
+            value: false
+          };
+        }
+
+        if (new_password !== confirm_password) {
+          return {
+            message: "Passwords do not seem to match",
+            value: false
+          };
+        }
+
+        const hashedPassword = await user.hashPass(new_password);
+
+        const updatedUser = await User.findByIdAndUpdate(
+          user._id,
+          { $set: { password: hashedPassword } },
+          { new: true }
+        );
+
+        const token = user.jwtToken();
+
+        return {
+          message: token,
+          value: true,
+          user: updatedUser
+        };
+      } catch (err) {
+        throw err;
       }
     },
 
-    editUser: async (_, { input }) => {
-      try {
-        const user = await User.findOne({ email: input.email });
+    // User Change password from in app...For all user types
+    resetPassword: combineResolvers(
+      isAuthenticated,
+      async (_, { old_password, new_password }, { Id }) => {
+        try {
+          const user = await User.findById(Id);
 
-        console.log(user);
-      } catch (error) {
-        console.log(error);
-        throw error;
+          if (!user) {
+            return {
+              message: "User not found",
+              value: false
+            };
+          }
+
+          // Verify old password
+          const isMatch = await user.verifyPass(old_password);
+
+          if (!isMatch) {
+            return {
+              message: "Old password is not correct",
+              value: false
+            };
+          }
+
+          const hashedPassword = await user.hashPass(new_password);
+
+          await User.findByIdAndUpdate(
+            Id,
+            { $set: { password: hashedPassword } },
+            { new: true }
+          );
+
+          return {
+            message: "Password reset successful",
+            value: true
+          };
+        } catch (error) {
+          throw error;
+        }
       }
-    },
+    ),
 
-    makeSuperAdmin: async (_, { email }) => {
-      console.log(email);
+    editUser: combineResolvers(isAuthenticated, async (_, args, { Id }) => {
       try {
-        const admin = { isSuperAdmin: true };
-        await User.findOneAndUpdate({ email: email }, admin, {
-          useFindAndModify: false
+        const user = await User.findByIdAndUpdate(Id, args, {
+          new: true
         });
-        return "this person is now and admin";
+
+        return {
+          message: "User updated successfully",
+          value: true,
+          user
+        };
+      } catch (error) {
+        throw error;
+      }
+    }),
+
+    makeSuperAdmin: combineResolvers(isSuperAdmin, async (_, { userId }) => {
+      try {
+        const admin = { userType: "super_admin" };
+
+        const updatedUser = await User.findByIdAndUpdate(userId, admin, {
+          new: true
+        });
+
+        return {
+          message: "User is now and admin",
+          value: true,
+          updatedUser
+        };
       } catch (error) {
         console.log(error);
         throw error;
       }
-    }
+    })
   },
 
   Subscription: {

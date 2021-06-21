@@ -13,7 +13,29 @@ const schoolSchema = new Schema(
     location: {
       type: String,
       required: true
-    }
+    },
+    created_by: {
+      type: Schema.Types.ObjectId,
+      ref: "User"
+    },
+    faculties: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Faculty"
+      }
+    ],
+    departments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Dept"
+      }
+    ],
+    levels: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Level"
+      }
+    ]
   },
   { timestamps: true }
 );

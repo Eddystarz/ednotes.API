@@ -11,14 +11,14 @@ export default gql`
   }
 
   input facultyInput {
-    school: String!
+    school: ID!
     name: String!
     description: String!
   }
 
   type Faculty {
-    id: ID!
-    school: String!
+    _id: ID!
+    school: School!
     name: String!
     description: String!
   }
