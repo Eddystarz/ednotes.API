@@ -39,12 +39,6 @@ export default gql`
     deleteCourse(courseId: ID!): DataStatus
   }
 
-  type DataStatus {
-    message: String!
-    value: Boolean!
-    data: Course
-  }
-
   type Course {
     _id: ID!
  

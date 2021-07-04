@@ -27,7 +27,7 @@ export default [
   newsResolver,
   storyResolver,
   courseResolver,
-  // topicResolver,
+  topicResolver,
   // lectureNoteResolver,
   customDateScalarResolver
 ];

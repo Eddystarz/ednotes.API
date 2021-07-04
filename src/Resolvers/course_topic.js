@@ -11,6 +11,63 @@ import { isAdmin, isAuthenticated, isStudent } from "./middleware";
 export default {
   Query: {
 
+    get_all_topics: combineResolvers(isAdmin, async (_, { cursor, limit }) => {
+      try {
+        let topics;
+
+        if (cursor) {
+          topics = await CourseTopic.find({
+            createdAt: { $lt: cursor }
+          })
+            .limit(limit + 1)
+            .sort({ createdAt: -1 });
+
+          if (topics.length === 0) {
+            return {
+              edges: topics
+            };
+          } else if (topics.length > 0) {
+            const hasNextPage = topics.length > limit;
+            const edges = hasNextPage ? topics.slice(0, -1) : topics;
+
+            return {
+              edges,
+              pageInfo: {
+                hasNextPage,
+                endCursor: edges[edges.length - 1].createdAt
+              }
+            };
+          }
+        } else {
+          console.log('edges')
+          topics = await CourseTopic.find()
+            .limit(limit + 1)
+            .sort({ createdAt: -1 });
+
+          if (topics.length === 0) {
+            return {
+              edges: topics
+            };
+          } else if (topics.length > 0) {
+            const hasNextPage = topics.length > limit;
+            const edges = hasNextPage ? topics.slice(0, -1) : topics;
+            return {
+              edges,
+              pageInfo: {
+                hasNextPage,
+                endCursor: edges[edges.length - 1].createdAt
+              }
+            };
+          }
+        }
+        throw new ApolloError(
+          "Something went wrong while trying to fetch topics"
+        );
+      } catch (error) {
+        throw error;
+      }
+    }
+    ),
     get_single_topic: combineResolvers(
       isAuthenticated,
       async (_, { topicId }) => {
@@ -37,7 +94,7 @@ export default {
 
   },
   Mutation: {
-    createTopic: combineResolvers(isAdmin, async (_, args, { Id }) => {
+    createTopic: combineResolvers(isAdmin, async (_, args) => {
       try {
         const newTopic = new CourseTopic({
           ...args

@@ -10,6 +10,7 @@ import newsTypeDefs from "./news";
 import storyTypeDefs from "./edstory";
 import genericTypeDefs from "./generic";
 import courseTypeDefs from "./course";
+import topicTypeDefs from "./course_topic";
 
 const typeDefs = gql`
   scalar Date
@@ -36,5 +37,6 @@ export default [
   newsTypeDefs,
   storyTypeDefs,
   genericTypeDefs,
-  courseTypeDefs
+  courseTypeDefs,
+  topicTypeDefs
 ];
