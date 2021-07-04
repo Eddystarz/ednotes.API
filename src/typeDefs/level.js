@@ -11,20 +11,21 @@ export default gql`
   }
 
   input levelInput {
-    school: String!
+    school: ID!
     name: String!
-    faculty: String!
-    dept: String!
+    faculty: ID!
+    dept: ID!
     description: String!
   }
 
   type Level {
-    id: ID!
-    school: String!
-    faculty: String!
-    dept: String!
+    _id: ID!
+    school: School!
+    faculty: Faculty!
+    dept: Dept!
     name: String!
     description: String!
+    students: [ID]
   }
 
   extend type Subscription {

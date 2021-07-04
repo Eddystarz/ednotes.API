@@ -2,29 +2,74 @@ import { gql } from "apollo-server-express";
 
 export default gql`
   extend type Query {
+    """
+    Get logged in users profile
+    """
     user: User
+
     users: [User]
   }
 
   extend type Mutation {
-    createSuperAdmin(input: signupInput): User
-    createAdmin(input: signupInput): User
-    signup(input: signupInput): User
-    login(input: loginInput): Token
+    """
+    Create super admin account
+    """
+    createSuperAdmin(input: signupInput!): UserStatus
+
+    """
+    Create admin account
+    """
+    createAdmin(input: signupInput!): UserStatus
+
+    """
+    Regular users signup
+    """
+    signup(input: signupInput!): UserStatus
+
+    """
+    login for all user types
+    """
+    login(input: loginInput!): UserStatus
+
     confirmEmail(token: String!): Boolean!
-    forgotPassword(email: String!): String!
-    resetPassword(input: resetPasswordInput): User
-    editUser(input: editUserInput): User
-    makeSuperAdmin(email: String!): String!
+
+    """
+    Initiate forgot password process for all users
+    """
+    forgotPassword(email: String!): UserStatus!
+
+    """
+    User reset password from forgot password
+    """
+    changePassword(
+      pass_token: String!
+      email: String!
+      new_password: String!
+      confirm_password: String!
+    ): UserStatus!
+
+    """
+    User Change password from in app...For all user types
+    """
+    resetPassword(old_password: String!, new_password: String!): UserStatus!
+
+    """
+    Edit User details
+    """
+    editUser(firstName: String, lastName: String, username: String): UserStatus!
+
+    makeSuperAdmin(userId: ID!): UserStatus!
   }
 
   input loginInput {
     email: String!
     password: String!
   }
+
   type Token {
     token: String!
   }
+
   input signupInput {
     firstName: String!
     lastName: String!
@@ -32,28 +77,26 @@ export default gql`
     email: String!
     password: String!
   }
-  input editUserInput {
-    firstName: String!
-    lastName: String!
-    email: String!
+
+  type UserStatus {
+    message: String!
+    value: Boolean!
+    user: User
   }
-  input resetPasswordInput {
-    password1: String!
-    password2: String!
-  }
+
   type User {
-    id: ID!
+    _id: ID!
     firstName: String!
     lastName: String!
     username: String!
     email: String!
-    isAdmin: Boolean
-    isSuperAdmin: Boolean
+    userType: String!
     isVerified: Boolean
     isActive: Boolean
     createdAt: Date!
     updatedAt: Date!
   }
+
   extend type Subscription {
     userCreated: User
   }

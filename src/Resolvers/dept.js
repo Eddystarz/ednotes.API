@@ -1,62 +1,69 @@
+import { ApolloError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
 import Dept from "../database/Models/department";
+import School from "../database/Models/school";
+import Faculty from "../database/Models/faculty";
 
 // ============= Services ===============//
-import { isAuthenticated, isAdmin } from "./middleware";
+import { isAdmin } from "./middleware";
 import { pubsub } from "../subscription";
 import { UserTopics } from "../subscription/events/user";
 
 export default {
   Query: {
-    depts: combineResolvers( async () => {
+    depts: combineResolvers(isAdmin, async () => {
       try {
         const depts = await Dept.find();
         if (!depts) {
-          throw new Error("Depts not found!");
+          throw new ApolloError("Depts not found!");
         }
         return depts;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     }),
 
-    dept: combineResolvers( async (_, { id }) => {
+    dept: combineResolvers(isAdmin, async (_, { id }) => {
       try {
         const dept = await Dept.findById(id);
         if (!dept) {
-          throw new Error("Dept not found!");
+          throw new ApolloError("Dept not found!");
         }
         return dept;
       } catch (error) {
-        console.log(error);
         throw error;
       }
     })
   },
 
   Mutation: {
-    createDept: combineResolvers(
-      isAuthenticated,
-      isAdmin,
-      async (_, { input }) => {
-        try {
-          const dept = Dept({ ...input });
-          const result = await dept.save();
-          return result;
-        } catch (error) {
-          console.log(error);
-          throw error;
-        }
+    createDept: combineResolvers(isAdmin, async (_, { input }) => {
+      try {
+        const dept = new Dept({ ...input });
+        const result = await dept.save();
+
+        await School.findByIdAndUpdate(input.school, {
+          $addToSet: { departments: result._id }
+        });
+
+        return result;
+      } catch (error) {
+        throw error;
       }
-    )
+    })
   },
 
   Subscription: {
     deptCreated: {
       subscribe: () => pubsub.asyncIterator(UserTopics.USER_CREATED)
     }
+  },
+
+  // Type relations to get data for other types when quering for departments
+  Dept: {
+    school: (_) => School.findById(_.school),
+    faculty: (_) => Faculty.findById(_.faculty)
   }
 };

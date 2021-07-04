@@ -1,38 +1,47 @@
-import { skip } from "graphql-resolvers";
-import User from "../../database/Models/user";
+import { AuthenticationError } from "apollo-server-express";
+import { combineResolvers, skip } from "graphql-resolvers";
 
-export const isAuthenticated = (_, __, { email }) => {
-  if (!email) {
-    throw new Error("Access Denied!Please login to continue");
-  }
-  return skip;
-};
+// Protection for all logged in users
+export const isAuthenticated = (_, __, { logged_in_user }) =>
+  
+  logged_in_user
+    ? skip
+    : new AuthenticationError("Access Denied! Please login to continue");
 
-export const isAdmin = async (_, __, { loggedInUserId }) => {
-  try {
-    const user = await User.findOne({ _id: loggedInUserId });
-    if (user.isAdmin !== true) {
-      throw new Error("Not Authorized to perform this action");
-    }
-    return skip;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
+// Protection for regular users
+export const isUser = combineResolvers(isAuthenticated, (_, __, { userType }) =>
+  userType === "user" || userType === "admin"
+    ? skip
+    : new AuthenticationError("Not Authorized to perform this action")
+);
 
-export const isSuperAdmin = async (_, __, { loggedInUserId }) => {
-  try {
-    const user = await User.findOne({ _id: loggedInUserId });
-    if (user.isSuperAdmin !== true && user.isAdmin !== true) {
-      throw new Error("Not Authorized to perform this action");
-    }
-    return skip;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
+// Protection for students
+export const isStudent = combineResolvers(
+  isAuthenticated,
+  (_, __, { userType }) =>
+    userType === "student"
+      ? skip
+      : new AuthenticationError("Not Authorized to perform this action")
+);
+
+// Protection for Admin previlages
+export const isAdmin = combineResolvers(
+  isAuthenticated,
+  (_, __, { userType }) =>
+    userType === "admin"
+      ? skip
+      : new AuthenticationError("Not Authorized to perform this action")
+);
+
+// Protection for Super Admin previlages
+export const isSuperAdmin = combineResolvers(
+  isAuthenticated,
+  (_, __, { userType }) =>
+    userType === "super_admin"
+      ? skip
+      : new AuthenticationError("Not Authorized to perform this action")
+);
+
 // module.exports.isTaskOwner = async (_,{ id }, {loggedInUserId}) => {
 //     try {
 //         if(!isValidObjectId(id)){

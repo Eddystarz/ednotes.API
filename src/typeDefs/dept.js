@@ -11,16 +11,16 @@ export default gql`
   }
 
   input deptInput {
-    school: String!
+    school: ID!
     name: String!
-    faculty: String!
+    faculty: ID!
     description: String!
   }
 
   type Dept {
-    id: ID!
-    school: String!
-    faculty: String!
+    _id: ID!
+    school: School!
+    faculty: Faculty!
     name: String!
     description: String!
   }
