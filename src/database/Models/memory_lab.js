@@ -19,4 +19,4 @@ const memoryLabSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.model("'MemoryLab", memoryLabSchema);
+export default mongoose.model("MemoryLab", memoryLabSchema);

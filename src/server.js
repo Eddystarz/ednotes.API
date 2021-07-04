@@ -29,8 +29,7 @@ const graphQlServer = async (app, PORT) => {
         // get the request header
         const header = req.headers.authorization || "";
 
-        const user = verifyUser(header);
-
+        const user = await verifyUser(header);
         if (!user) {
           return {
             logged_in_user: false,
