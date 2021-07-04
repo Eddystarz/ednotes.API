@@ -19,7 +19,7 @@ export default gql`
     """
     Create admin account
     """
-    createAdmin(input: signupInput!): User
+    createAdmin(input: signupInput!): UserStatus
 
     """
     Regular users signup
@@ -91,8 +91,6 @@ export default gql`
     username: String!
     email: String!
     userType: String!
-    isAdmin: Boolean
-    isSuperAdmin: Boolean
     isVerified: Boolean
     isActive: Boolean
     createdAt: Date!

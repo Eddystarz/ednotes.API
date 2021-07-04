@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const courseTopicSchema = new Schema({
+const courseSchema = new Schema({
     school: {
         type: Schema.Types.ObjectId,
         ref: "School"
@@ -31,4 +31,4 @@ const courseTopicSchema = new Schema({
       }
 });
 
-export default mongoose.model("Course", courseTopicSchema);
+export default mongoose.model("Course", courseSchema);

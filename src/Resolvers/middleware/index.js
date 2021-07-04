@@ -3,13 +3,14 @@ import { combineResolvers, skip } from "graphql-resolvers";
 
 // Protection for all logged in users
 export const isAuthenticated = (_, __, { logged_in_user }) =>
+  
   logged_in_user
     ? skip
     : new AuthenticationError("Access Denied! Please login to continue");
 
 // Protection for regular users
 export const isUser = combineResolvers(isAuthenticated, (_, __, { userType }) =>
-  userType === "user"
+  userType === "admin"
     ? skip
     : new AuthenticationError("Not Authorized to perform this action")
 );

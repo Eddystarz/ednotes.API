@@ -9,13 +9,13 @@ import Faculty from "../database/Models/faculty";
 import Dept from "../database/Models/department";
 
 // ============= Services ===============//
-import { isAdmin } from "./middleware";
+import { isAdmin, isAuthenticated } from "./middleware";
 import { pubsub } from "../subscription";
 import { UserTopics } from "../subscription/events/user";
 
 export default {
   Query: {
-    levels: combineResolvers(isAdmin, async () => {
+    levels: combineResolvers(isAuthenticated, async () => {
       try {
         const levels = await Level.find();
         if (!levels) {
