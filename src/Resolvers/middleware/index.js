@@ -10,7 +10,7 @@ export const isAuthenticated = (_, __, { logged_in_user }) =>
 
 // Protection for regular users
 export const isUser = combineResolvers(isAuthenticated, (_, __, { userType }) =>
-  userType === "admin"
+  userType === "user" || userType === "admin"
     ? skip
     : new AuthenticationError("Not Authorized to perform this action")
 );

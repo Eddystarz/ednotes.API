@@ -37,7 +37,7 @@ export default {
 
   },
   Mutation: {
-    createCourse: combineResolvers(isAdmin, async (_, args, { Id }) => {
+    createTopic: combineResolvers(isAdmin, async (_, args, { Id }) => {
       try {
         const newTopic = new CourseTopic({
           ...args

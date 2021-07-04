@@ -31,7 +31,7 @@ export default {
     }),
 
     // Logged in user profile
-    user: combineResolvers( async (_, __, { Id }) => {
+    user: combineResolvers(isUser, async (_, __, { Id }) => {
       try {
         // console.log(Id)
         const user = await User.findById(Id);

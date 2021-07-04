@@ -15,7 +15,7 @@ import { UserTopics } from "../subscription/events/user";
 
 export default {
   Query: {
-    levels: combineResolvers(isAuthenticated, async () => {
+    levels: combineResolvers(isAdmin, async () => {
       try {
         const levels = await Level.find();
         if (!levels) {
@@ -34,6 +34,7 @@ export default {
         if (!level) {
           throw new ApolloError("Level not found!");
         }
+        console.log(level)
         return level;
       } catch (error) {
         console.log(error);

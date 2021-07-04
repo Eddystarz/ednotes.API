@@ -7,13 +7,67 @@ import Course from "../database/Models/course";
 // ============= Services ===============//
 import { isAdmin, isAuthenticated, isStudent } from "./middleware";
 
-
 export default {
   Query: {
+    get_all_courses: combineResolvers(isAdmin, async (_, { cursor, limit }) => {
+        try {
+          let courses;
 
-    get_single_course: combineResolvers(
-      isAuthenticated,
-      async (_, { courseId }) => {
+          if (cursor) {
+            courses = await Course.find({
+              createdAt: { $lt: cursor }
+            })
+              .limit(limit + 1)
+              .sort({ createdAt: -1 });
+
+            if (courses.length === 0) {
+              return {
+                edges: courses
+              };
+            } else if (courses.length > 0) {
+              const hasNextPage = courses.length > limit;
+              const edges = hasNextPage ? courses.slice(0, -1) : courses;
+
+              return {
+                edges,
+                pageInfo: {
+                  hasNextPage,
+                  endCursor: edges[edges.length - 1].createdAt
+                }
+              };
+            }
+          } else {
+            courses = await Course.find()
+              .limit(limit + 1)
+              .sort({ createdAt: -1 });
+
+            if (courses.length === 0) {
+              return {
+                edges: courses
+              };
+            } else if (courses.length > 0) {
+              const hasNextPage = courses.length > limit;
+              const edges = hasNextPage ? courses.slice(0, -1) : courses;
+
+              return {
+                edges,
+                pageInfo: {
+                  hasNextPage,
+                  endCursor: edges[edges.length - 1].createdAt
+                }
+              };
+            }
+          }
+          throw new ApolloError(
+            "Something went wrong while trying to fetch courses"
+          );
+        } catch (error) {
+          throw error;
+        }
+      }
+    ),
+
+    get_single_course: combineResolvers(isAuthenticated, async (_, { courseId }) => {
         try {
           const course = await Course.findById(courseId);
 
@@ -48,7 +102,7 @@ export default {
         return {
           message: "Course created successfully",
           value: true,
-          news: savedCourse
+          data: savedCourse
         };
       } catch (error) {
         throw error;
@@ -64,7 +118,7 @@ export default {
         return {
           message: "Course updated successfully",
           value: true,
-          news: updateCourse
+          data: updateCourse
         } 
       } catch (error) {
         throw error;

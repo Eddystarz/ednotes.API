@@ -21,7 +21,7 @@ const levelSchema = new Schema(
     students: [
       {
         type: Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Student"
       }
     ]
   },

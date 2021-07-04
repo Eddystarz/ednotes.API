@@ -29,7 +29,7 @@ const graphQlServer = async (app, PORT) => {
         // get the request header
         const header = req.headers.authorization || "";
 
-        const user = verifyUser(header);
+        const user = await verifyUser(header);
         if (!user) {
           return {
             logged_in_user: false,
@@ -37,14 +37,10 @@ const graphQlServer = async (app, PORT) => {
             userType: null
           };
         } else {
-          const userVal = await user.then((res) => {
-              return res
-            }
-          )
           return {
             logged_in_user: true,
-            Id: userVal.userId,
-            userType: userVal.userType
+            Id: user.userId,
+            userType: user.userType
           };
         }
       }

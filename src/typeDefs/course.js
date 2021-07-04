@@ -5,8 +5,8 @@ export default gql`
     """
     Fetch single course
     """
-    get_single_course(courseId: ID!): CourseStatus
-
+    get_single_course(courseId: ID!): DataStatus
+    get_all_courses(cursor: String, limit: Int): CourseConnection!
   }
 
   extend type Mutation {
@@ -24,25 +24,25 @@ export default gql`
       description: String
 
       semester: String
-    ): CourseStatus
+    ): DataStatus
 
     editCourse(
       courseId: ID!
       name: String
       description: String
       semester: String
-    ): CourseStatus
+    ): DataStatus
 
     """
     "At no point is the deleted news data returned in this request
     """
-    deleteCourse(courseId: ID!): CourseStatus
+    deleteCourse(courseId: ID!): DataStatus
   }
 
-  type CourseStatus {
+  type DataStatus {
     message: String!
     value: Boolean!
-    course: Course
+    data: Course
   }
 
   type Course {
