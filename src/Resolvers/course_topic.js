@@ -39,7 +39,6 @@ export default {
             };
           }
         } else {
-          console.log('edges')
           topics = await CourseTopic.find()
             .limit(limit + 1)
             .sort({ createdAt: -1 });
