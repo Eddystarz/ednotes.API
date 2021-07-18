@@ -11,7 +11,7 @@ export default gql`
       cursor: String
       limit: Int
       courseId: ID!
-    ): TopicConnection!
+    ): TopicConnection
   }
 
   extend type Mutation {

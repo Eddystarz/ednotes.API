@@ -6,7 +6,7 @@ export default gql`
     Fetch single course
     """
     get_single_course(courseId: ID!): DataStatus
-    get_all_courses(cursor: String, limit: Int): CourseConnection!
+    get_all_courses(cursor: String, limit: Int): CourseConnection
   }
 
   extend type Mutation {
@@ -14,7 +14,7 @@ export default gql`
       school: ID
 
       faculty: ID
-      
+
       dept: ID
 
       level: ID
@@ -41,13 +41,13 @@ export default gql`
 
   type Course {
     _id: ID!
- 
+
     school: School
-   
+
     faculty: Faculty
-  
+
     dept: Dept
-  
+
     level: Level
 
     name: String
@@ -55,7 +55,6 @@ export default gql`
     description: String
 
     semester: String
-
   }
 
   type CourseConnection {

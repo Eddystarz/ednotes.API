@@ -11,6 +11,7 @@ import storyTypeDefs from "./edstory";
 import genericTypeDefs from "./generic";
 import courseTypeDefs from "./course";
 import topicTypeDefs from "./course_topic";
+import lectureTypeDefs from "./lecture_notes";
 
 const typeDefs = gql`
   scalar Date
@@ -38,5 +39,6 @@ export default [
   storyTypeDefs,
   genericTypeDefs,
   courseTypeDefs,
-  topicTypeDefs
+  topicTypeDefs,
+  lectureTypeDefs
 ];

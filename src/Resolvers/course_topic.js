@@ -11,7 +11,7 @@ import { isAdmin, isAuthenticated } from "./middleware";
 export default {
   Query: {
     get_course_topics: combineResolvers(
-      isAdmin,
+      isAuthenticated,
       async (_, { cursor, limit, courseId }) => {
         try {
           let topics;
@@ -148,7 +148,7 @@ export default {
     })
   },
 
-  // Type relations to get data for other types when quering for faculties
+  // Type relations to get data for other types when quering for course topics
   Topic: {
     course: (_) => Course.findById(_.course)
   }
