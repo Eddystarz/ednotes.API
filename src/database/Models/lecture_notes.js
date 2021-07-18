@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const pastQuestionSchema = new mongoose.Schema({
+const lecturNoteSchema = new mongoose.Schema({
   course: {
     type: Schema.Types.ObjectId,
     ref: "Course"
@@ -19,4 +19,4 @@ const pastQuestionSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.model("PastQuestion", pastQuestionSchema);
+export default mongoose.model("LectureNote", lecturNoteSchema);

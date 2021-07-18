@@ -10,9 +10,8 @@ export const verifyUser = async (req_header) => {
       const token = req_header.split(" ")[1];
 
       if (token) {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
-        return decodedToken;
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        return decodedToken
       }
       return null;
     }

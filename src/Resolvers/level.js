@@ -9,7 +9,7 @@ import Faculty from "../database/Models/faculty";
 import Dept from "../database/Models/department";
 
 // ============= Services ===============//
-import { isAdmin } from "./middleware";
+import { isAdmin, isAuthenticated } from "./middleware";
 import { pubsub } from "../subscription";
 import { UserTopics } from "../subscription/events/user";
 
@@ -34,6 +34,7 @@ export default {
         if (!level) {
           throw new ApolloError("Level not found!");
         }
+        console.log(level)
         return level;
       } catch (error) {
         console.log(error);
