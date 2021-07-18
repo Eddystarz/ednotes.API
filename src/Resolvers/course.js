@@ -5,75 +5,76 @@ import { combineResolvers } from "graphql-resolvers";
 import Course from "../database/Models/course";
 
 // ============= Services ===============//
-import { isAdmin, isAuthenticated, isStudent } from "./middleware";
+import { isAdmin, isAuthenticated } from "./middleware";
 
 export default {
   Query: {
     get_all_courses: combineResolvers(isAdmin, async (_, { cursor, limit }) => {
-        try {
-          let courses;
+      try {
+        let courses;
 
-          if (cursor) {
-            courses = await Course.find({
-              createdAt: { $lt: cursor }
-            })
-              .limit(limit + 1)
-              .sort({ createdAt: -1 });
+        if (cursor) {
+          courses = await Course.find({
+            createdAt: { $lt: cursor }
+          })
+            .limit(limit + 1)
+            .sort({ createdAt: -1 });
 
-            if (courses.length === 0) {
-              return {
-                edges: courses
-              };
-            } else if (courses.length > 0) {
-              const hasNextPage = courses.length > limit;
-              const edges = hasNextPage ? courses.slice(0, -1) : courses;
+          if (courses.length === 0) {
+            return {
+              edges: courses
+            };
+          } else if (courses.length > 0) {
+            const hasNextPage = courses.length > limit;
+            const edges = hasNextPage ? courses.slice(0, -1) : courses;
 
-              return {
-                edges,
-                pageInfo: {
-                  hasNextPage,
-                  endCursor: edges[edges.length - 1].createdAt
-                }
-              };
-            }
-          } else {
-            courses = await Course.find()
-              .limit(limit + 1)
-              .sort({ createdAt: -1 });
-
-            if (courses.length === 0) {
-              return {
-                edges: courses
-              };
-            } else if (courses.length > 0) {
-              const hasNextPage = courses.length > limit;
-              const edges = hasNextPage ? courses.slice(0, -1) : courses;
-
-              return {
-                edges,
-                pageInfo: {
-                  hasNextPage,
-                  endCursor: edges[edges.length - 1].createdAt
-                }
-              };
-            }
+            return {
+              edges,
+              pageInfo: {
+                hasNextPage,
+                endCursor: edges[edges.length - 1].createdAt
+              }
+            };
           }
-          throw new ApolloError(
-            "Something went wrong while trying to fetch courses"
-          );
-        } catch (error) {
-          throw error;
-        }
-      }
-    ),
+        } else {
+          courses = await Course.find()
+            .limit(limit + 1)
+            .sort({ createdAt: -1 });
 
-    get_single_course: combineResolvers(isAuthenticated, async (_, { courseId }) => {
+          if (courses.length === 0) {
+            return {
+              edges: courses
+            };
+          } else if (courses.length > 0) {
+            const hasNextPage = courses.length > limit;
+            const edges = hasNextPage ? courses.slice(0, -1) : courses;
+
+            return {
+              edges,
+              pageInfo: {
+                hasNextPage,
+                endCursor: edges[edges.length - 1].createdAt
+              }
+            };
+          }
+        }
+        throw new ApolloError(
+          "Something went wrong while trying to fetch courses"
+        );
+      } catch (error) {
+        throw error;
+      }
+    }),
+
+    get_single_course: combineResolvers(
+      isAuthenticated,
+      async (_, { courseId }) => {
         try {
           const course = await Course.findById(courseId);
 
           if (!course) {
             return {
-              message: "News not found",
+              message: "Course not found",
               value: false
             };
           }
@@ -88,10 +89,10 @@ export default {
         }
       }
     )
-
   },
+
   Mutation: {
-    createCourse: combineResolvers(isAdmin, async (_, args, { Id }) => {
+    createCourse: combineResolvers(isAdmin, async (_, args) => {
       try {
         const newCourse = new Course({
           ...args
@@ -106,20 +107,24 @@ export default {
         };
       } catch (error) {
         throw error;
-      }     
+      }
     }),
 
     editCourse: combineResolvers(isAdmin, async (_, args) => {
       try {
-        const updateCourse = await Course.findByIdAndUpdate(args.courseId, args, {
-          new: true
-        });
+        const updateCourse = await Course.findByIdAndUpdate(
+          args.courseId,
+          args,
+          {
+            new: true
+          }
+        );
 
         return {
           message: "Course updated successfully",
           value: true,
           data: updateCourse
-        } 
+        };
       } catch (error) {
         throw error;
       }
@@ -137,7 +142,5 @@ export default {
         throw error;
       }
     })
-
-  },
-
-}
+  }
+};

@@ -3,70 +3,73 @@ import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
 import CourseTopic from "../database/Models/course_topic";
+import Course from "../database/Models/course";
 
 // ============= Services ===============//
-import { isAdmin, isAuthenticated, isStudent } from "./middleware";
-
+import { isAdmin, isAuthenticated } from "./middleware";
 
 export default {
   Query: {
+    get_course_topics: combineResolvers(
+      isAdmin,
+      async (_, { cursor, limit, courseId }) => {
+        try {
+          let topics;
 
-    get_all_topics: combineResolvers(isAdmin, async (_, { cursor, limit }) => {
-      try {
-        let topics;
+          if (cursor) {
+            topics = await CourseTopic.find({
+              course: courseId,
+              createdAt: { $lt: cursor }
+            })
+              .limit(limit + 1)
+              .sort({ createdAt: -1 });
 
-        if (cursor) {
-          topics = await CourseTopic.find({
-            createdAt: { $lt: cursor }
-          })
-            .limit(limit + 1)
-            .sort({ createdAt: -1 });
+            if (topics.length === 0) {
+              return {
+                edges: topics
+              };
+            } else if (topics.length > 0) {
+              const hasNextPage = topics.length > limit;
+              const edges = hasNextPage ? topics.slice(0, -1) : topics;
 
-          if (topics.length === 0) {
-            return {
-              edges: topics
-            };
-          } else if (topics.length > 0) {
-            const hasNextPage = topics.length > limit;
-            const edges = hasNextPage ? topics.slice(0, -1) : topics;
+              return {
+                edges,
+                pageInfo: {
+                  hasNextPage,
+                  endCursor: edges[edges.length - 1].createdAt
+                }
+              };
+            }
+          } else {
+            topics = await CourseTopic.find({ course: courseId })
+              .limit(limit + 1)
+              .sort({ createdAt: -1 });
 
-            return {
-              edges,
-              pageInfo: {
-                hasNextPage,
-                endCursor: edges[edges.length - 1].createdAt
-              }
-            };
+            if (topics.length === 0) {
+              return {
+                edges: topics
+              };
+            } else if (topics.length > 0) {
+              const hasNextPage = topics.length > limit;
+              const edges = hasNextPage ? topics.slice(0, -1) : topics;
+              return {
+                edges,
+                pageInfo: {
+                  hasNextPage,
+                  endCursor: edges[edges.length - 1].createdAt
+                }
+              };
+            }
           }
-        } else {
-          topics = await CourseTopic.find()
-            .limit(limit + 1)
-            .sort({ createdAt: -1 });
-
-          if (topics.length === 0) {
-            return {
-              edges: topics
-            };
-          } else if (topics.length > 0) {
-            const hasNextPage = topics.length > limit;
-            const edges = hasNextPage ? topics.slice(0, -1) : topics;
-            return {
-              edges,
-              pageInfo: {
-                hasNextPage,
-                endCursor: edges[edges.length - 1].createdAt
-              }
-            };
-          }
+          throw new ApolloError(
+            "Something went wrong while trying to fetch topics"
+          );
+        } catch (error) {
+          throw error;
         }
-        throw new ApolloError(
-          "Something went wrong while trying to fetch topics"
-        );
-      } catch (error) {
-        throw error;
       }
-    }
     ),
+
     get_single_topic: combineResolvers(
       isAuthenticated,
       async (_, { topicId }) => {
@@ -83,15 +86,15 @@ export default {
           return {
             message: "Data found",
             value: true,
-            course
+            course_topic: course
           };
         } catch (error) {
           throw error;
         }
       }
     )
-
   },
+
   Mutation: {
     createTopic: combineResolvers(isAdmin, async (_, args) => {
       try {
@@ -104,24 +107,28 @@ export default {
         return {
           message: "Topic created successfully",
           value: true,
-          news: savedCourse
+          course_topic: savedCourse
         };
       } catch (error) {
         throw error;
-      }     
+      }
     }),
 
     editTopic: combineResolvers(isAdmin, async (_, args) => {
       try {
-        const updateTopic = await CourseTopic.findByIdAndUpdate(args.topicId, args, {
-          new: true
-        });
+        const updateTopic = await CourseTopic.findByIdAndUpdate(
+          args.topicId,
+          args,
+          {
+            new: true
+          }
+        );
 
         return {
           message: "Topic updated successfully",
           value: true,
-          news: updateTopic
-        } 
+          course_topic: updateTopic
+        };
       } catch (error) {
         throw error;
       }
@@ -139,7 +146,10 @@ export default {
         throw error;
       }
     })
-
   },
 
-}
+  // Type relations to get data for other types when quering for faculties
+  Topic: {
+    course: (_) => Course.findById(_.course)
+  }
+};

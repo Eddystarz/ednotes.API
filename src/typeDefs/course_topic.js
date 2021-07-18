@@ -2,44 +2,49 @@ import { gql } from "apollo-server-express";
 
 export default gql`
   extend type Query {
+    get_single_topic(topicId: ID!): TopicStatus
+
     """
-    Fetch single course
+    Get topics belonging to a course
     """
-    get_single_topic(topicId: ID!): DataStatus
-    get_all_topics(cursor: String, limit: Int): TopicConnection!
+    get_course_topics(
+      cursor: String
+      limit: Int
+      courseId: ID!
+    ): TopicConnection!
   }
 
   extend type Mutation {
     createTopic(
-      course: ID
+      course: ID!
 
-      name: String
+      name: String!
 
-      description: String
+      description: String!
+    ): TopicStatus
 
-    ): DataStatus
-
-    editTopic(
-      topicId: ID!
-      name: String
-      description: String
-    ): DataStatus
+    editTopic(topicId: ID!, name: String, description: String): TopicStatus
 
     """
     "At no point is the deleted news data returned in this request
     """
-    deleteTopic(topicId: ID!): DataStatus
+    deleteTopic(topicId: ID!): TopicStatus
   }
 
   type Topic {
     _id: ID!
-  
-    course: Course
 
-    name: String
+    course: Course!
 
-    description: String
+    name: String!
 
+    description: String!
+  }
+
+  type TopicStatus {
+    message: String!
+    value: Boolean!
+    course_topic: Topic
   }
 
   type TopicConnection {
