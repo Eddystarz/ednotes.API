@@ -12,6 +12,14 @@ export default gql`
 
   extend type Mutation {
     studentSignup(input: studentSignupInput): StudentStatus
+
+    updateStudent(
+      state: String
+      school: ID
+      faculty: ID
+      dept: ID
+      level: ID
+    ): StudentStatus
   }
 
   input studentSignupInput {
@@ -21,11 +29,6 @@ export default gql`
     email: String!
     password: String!
     phoneNumber: String!
-    state: String!
-    school: ID!
-    faculty: ID!
-    dept: ID!
-    level: ID!
   }
 
   input editStudentInput {

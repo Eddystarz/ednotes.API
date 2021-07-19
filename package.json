@@ -4,12 +4,12 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "migrate": " sequelize db:migrate",
+    "migrate": "sequelize db:migrate",
     "clean": "rm -rf build && mkdir build",
-    "dev": "NODE_ENV=development & babel-watch ./src/index.js",
-    "dev_win": "SET NODE_ENV=development & babel-watch ./src/index.js",
-    "start": "npm run build & SET NODE_ENV=production & babel-watch build/index.js",
-    "staging": "NODE_ENV=staging pm2 start --name 'ednotes' srch/index.js",
+    "dev": "NODE_ENV=development babel-watch ./src/index.js",
+    "dev_win": "SET NODE_ENV=development babel-watch ./src/index.js",
+    "start": "npm run build && SET NODE_ENV=production nodemon build/index.js",
+    "staging": "NODE_ENV=staging pm2 start --name 'ednotes' src/index.js",
     "build": "npm run clean && npm run build-server",
     "build-server": "babel -d ./build ./src -s",
     "test": "echo \"Error: no test specified\" && exit 1"
