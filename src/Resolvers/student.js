@@ -90,7 +90,23 @@ export default {
       } catch (error) {
         throw error;
       }
-    }
+    },
+
+    updateStudent: combineResolvers(isStudent, async (_, args, { Id }) => {
+      try {
+        const student = await Student.findByIdAndUpdate(Id, args, {
+          new: true
+        });
+
+        return {
+          message: "Student updated successfully",
+          value: true,
+          student
+        };
+      } catch (err) {
+        throw err;
+      }
+    })
   },
 
   Subscription: {
