@@ -6,6 +6,7 @@ export default gql`
     value: Boolean!
     data: Course
   }
+
   type PageInfo {
     hasNextPage: Boolean!
     endCursor: Date!

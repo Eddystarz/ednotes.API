@@ -46,8 +46,9 @@ const graphQlServer = async (app, PORT) => {
       }
     },
     formatError: (error) => {
+      const env = process.env.NODE_ENV !== "production" ? error : error.message;
       return {
-        message: error
+        message: env
       };
     }
   });
