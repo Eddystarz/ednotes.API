@@ -15,6 +15,7 @@ import lectureTypeDefs from "./lecture_notes";
 
 const typeDefs = gql`
   scalar Date
+  scalar Upload
 
   type Query {
     _: String

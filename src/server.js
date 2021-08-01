@@ -1,4 +1,5 @@
 import { ApolloServer } from "apollo-server-express";
+import { graphqlUploadExpress } from "graphql-upload";
 import { config } from "dotenv";
 
 import { connection } from "./database/util";
@@ -16,8 +17,9 @@ const graphQlServer = async (app, PORT) => {
   agenda;
 
   const server = new ApolloServer({
-    introspection: true,
+    introspection: true, // Change to false in production
     playground: true,
+    uploads: false,
     typeDefs,
     resolvers,
     context: async ({ req, connection }) => {
@@ -53,6 +55,7 @@ const graphQlServer = async (app, PORT) => {
     }
   });
 
+  app.use(graphqlUploadExpress({ maxFileSize: 400000000, maxFiles: 10 }));
   server.applyMiddleware({ app, path: "/graphql" });
 
   const httpServer = app.listen(PORT, () => {

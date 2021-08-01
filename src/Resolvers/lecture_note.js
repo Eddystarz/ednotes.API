@@ -8,6 +8,7 @@ import Course from "../database/Models/course";
 
 // ============= Services ===============//
 import { isAdmin, isAuthenticated } from "./middleware";
+import { processUpload } from "../helper/file_uploads";
 
 export default {
   Query: {
@@ -146,7 +147,24 @@ export default {
       } catch (error) {
         throw error;
       }
-    })
+    }),
+
+    test: async (_, { file }) => {
+      try {
+        // const filePromise = await file;
+        // console.log(filePromise);
+        const uploadData = await processUpload(file);
+
+        console.log(uploadData);
+        // if (filePromise.mimetype.includes("pdf")) {
+        //   console.log("Na PDF File");
+        // }
+
+        return true;
+      } catch (error) {
+        throw error;
+      }
+    }
   },
 
   // Type relations to get data for other types when quering for lecture notes

@@ -28,6 +28,8 @@ export default gql`
     updateNote(noteId: ID!, text: String, name: String): LectureNoteStatus
 
     deleteNote(noteId: ID!): LectureNoteStatus
+
+    test(file: Upload): Boolean
   }
 
   type LectureNote {

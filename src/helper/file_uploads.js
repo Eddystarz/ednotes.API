@@ -11,10 +11,13 @@ cloudinary.config({
 
 // File upload to cloudinary
 export const processUpload = async (file) => {
+  console.log("Called this function");
   const { filename, createReadStream } = await file;
 
   try {
+    console.log("Streams");
     const result = await new Promise((resolve, reject) => {
+      console.log("Promise called");
       createReadStream().pipe(
         cloudinary.v2.uploader.upload_stream((error, result) => {
           if (error) {
@@ -30,6 +33,7 @@ export const processUpload = async (file) => {
 
     return newPhoto;
   } catch (err) {
+    console.log("-------------Error thrown============");
     throw err;
   }
 };
