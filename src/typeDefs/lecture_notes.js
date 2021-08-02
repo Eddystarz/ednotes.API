@@ -27,6 +27,12 @@ export default gql`
 
     updateNote(noteId: ID!, text: String, name: String): LectureNoteStatus
 
+    """
+    Add attachments (Pdf/Video) to a lecture note...The lecture note must have been created
+    first..
+    """
+    uploadNoteAttachments(lectureNoteId: ID!, file: Upload!): LectureNoteStatus
+
     deleteNote(noteId: ID!): LectureNoteStatus
 
     test(file: Upload): Boolean
@@ -42,6 +48,8 @@ export default gql`
     name: String!
 
     text: String!
+
+    noteAttachments: [FileType!]
   }
 
   type LectureNoteStatus {

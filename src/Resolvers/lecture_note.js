@@ -149,22 +149,51 @@ export default {
       }
     }),
 
-    test: async (_, { file }) => {
+    uploadNoteAttachments: combineResolvers(isAdmin, async (_, args) => {
       try {
-        // const filePromise = await file;
-        // console.log(filePromise);
-        const uploadData = await processUpload(file);
+        const filePromise = await args.file;
+        const isPdf = filePromise.mimetype.includes("pdf");
+        const isVideo = filePromise.mimetype.includes("video");
 
-        console.log(uploadData);
-        // if (filePromise.mimetype.includes("pdf")) {
-        //   console.log("Na PDF File");
-        // }
+        if (!isPdf && !isVideo) {
+          return {
+            message: "Make sure you are uploading a video or pdf file",
+            value: false
+          };
+        }
 
-        return true;
+        const mime_type = isPdf ? "pdf" : "video";
+
+        const uploadData = await processUpload(args.file);
+
+        const updatedNote = await LectureNote.findByIdAndUpdate(
+          args.lectureNoteId,
+          {
+            $push: {
+              noteAttachments: {
+                $each: [
+                  {
+                    url: uploadData.path,
+                    file_name: uploadData.filename,
+                    mime_type
+                  }
+                ],
+                $sort: { date_uploaded: -1 }
+              }
+            }
+          },
+          { new: true }
+        );
+
+        return {
+          message: "File uploaded",
+          value: true,
+          note: updatedNote
+        };
       } catch (error) {
         throw error;
       }
-    }
+    })
   },
 
   // Type relations to get data for other types when quering for lecture notes
