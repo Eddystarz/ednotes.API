@@ -8,6 +8,7 @@ import Course from "../database/Models/course";
 
 // ============= Services ===============//
 import { isAdmin, isAuthenticated } from "./middleware";
+import { processUpload } from "../helper/file_uploads";
 
 export default {
   Query: {
@@ -142,6 +143,52 @@ export default {
         return {
           message: "Note deleted successfully",
           value: true
+        };
+      } catch (error) {
+        throw error;
+      }
+    }),
+
+    uploadNoteAttachments: combineResolvers(isAdmin, async (_, args) => {
+      try {
+        const filePromise = await args.file;
+        const isPdf = filePromise.mimetype.includes("pdf");
+        const isVideo = filePromise.mimetype.includes("video");
+
+        if (!isPdf && !isVideo) {
+          return {
+            message: "Make sure you are uploading a video or pdf file",
+            value: false
+          };
+        }
+
+        const mime_type = isPdf ? "pdf" : "video";
+
+        const uploadData = await processUpload(args.file);
+
+        const updatedNote = await LectureNote.findByIdAndUpdate(
+          args.lectureNoteId,
+          {
+            $push: {
+              noteAttachments: {
+                $each: [
+                  {
+                    url: uploadData.path,
+                    file_name: uploadData.filename,
+                    mime_type
+                  }
+                ],
+                $sort: { date_uploaded: -1 }
+              }
+            }
+          },
+          { new: true }
+        );
+
+        return {
+          message: "File uploaded",
+          value: true,
+          note: updatedNote
         };
       } catch (error) {
         throw error;

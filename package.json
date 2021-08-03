@@ -36,6 +36,7 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-resolvers": "^0.4.2",
     "graphql-tools": "^7.0.2",
+    "graphql-upload": "11.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "3.6.4",
     "mongoose": "5.11.15",

@@ -15,6 +15,7 @@ export const processUpload = async (file) => {
 
   try {
     const result = await new Promise((resolve, reject) => {
+      console.log("Promise called");
       createReadStream().pipe(
         cloudinary.v2.uploader.upload_stream((error, result) => {
           if (error) {

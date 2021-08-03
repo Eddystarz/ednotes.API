@@ -1,4 +1,5 @@
 import { GraphQLDateTime } from "graphql-iso-date";
+import { GraphQLUpload } from "graphql-upload";
 
 // ========= Resolvers ========//
 import userResolver from "./user";
@@ -17,6 +18,10 @@ const customDateScalarResolver = {
   Date: GraphQLDateTime
 };
 
+const customFileUploadResolver = {
+  Upload: GraphQLUpload
+};
+
 export default [
   userResolver,
   schoolResolver,
@@ -29,5 +34,6 @@ export default [
   courseResolver,
   topicResolver,
   lectureNoteResolver,
-  customDateScalarResolver
+  customDateScalarResolver,
+  customFileUploadResolver
 ];
