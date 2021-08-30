@@ -6,6 +6,7 @@
   "scripts": {
     "migrate": "sequelize db:migrate",
     "clean": "rm -rf build && mkdir build",
+    "deploy": "git add . && git commit -m Heroku && git push heroku main",
     "dev": "NODE_ENV=development & babel-watch ./src/index.js",
     "dev_win": "SET NODE_ENV=development & babel-watch ./src/index.js",
     "start": "npm run build & SET NODE_ENV=production & babel-watch ./src/index.js",
