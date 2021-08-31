@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import config from "../utils/config";
 const { MG_API_KEY, MG_DOMAIN } = config;
+console.log("keys herereeeeeeeeee", MG_API_KEY, MG_DOMAIN);
 
 const mgAuth = {
 	auth: {
