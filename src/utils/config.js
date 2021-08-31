@@ -10,9 +10,9 @@ const {
 	CLOUD_NAME,
 	CLOUDINARY_API_KEY,
 	CLOUDINARY_API_SECRET,
-	API_KEY,
+	MG_API_KEY,
+	MG_DOMAIN,
 } = process.env;
-// console.log("test mongooooooo", MONGO_DB_URI);
 
 export default {
 	EMAIL_SECRET,
@@ -22,5 +22,6 @@ export default {
 	CLOUD_NAME,
 	CLOUDINARY_API_KEY,
 	CLOUDINARY_API_SECRET,
-	API_KEY,
+	MG_API_KEY,
+	MG_DOMAIN,
 };

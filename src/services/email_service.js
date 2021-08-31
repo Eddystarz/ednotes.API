@@ -1,16 +1,27 @@
 import nodemailer from "nodemailer";
-import nodemailerSendgrid from "nodemailer-sendgrid";
+import mg from "nodemailer-mailgun-transport";
+import handlebars from "handlebars";
+import fs from "fs";
+import path from "path";
 import config from "../utils/config";
-const { API_KEY } = config;
+const { MG_API_KEY, MG_DOMAIN } = config;
 
-const auth = {
+const mgAuth = {
 	auth: {
-		api_key: API_KEY || "SENDGRID_API_KEY", // TODO: Replace with your mailgun API KEY
-		// domain: process.env.DOMAIN || 'SENDGRID_DOMAIN' // TODO: Replace with your mailgun DOMAIN
+		api_key: MG_API_KEY,
+		domain: MG_DOMAIN,
 	},
 };
 
-const transporter = nodemailer.createTransport(nodemailerSendgrid(auth));
+const emailTemplateSource = fs.readFileSync(
+	path.join(__dirname, "../views/template.hbs"),
+	"utf8"
+);
+
+const smtpTransporter = nodemailer.createTransport(mg(mgAuth));
+const template = handlebars.compile(emailTemplateSource);
+
+export const htmlToSend = (message) => template({ message });
 
 export const sendMail = (email, subject, text, html) => {
 	const mailOptions = {
@@ -21,7 +32,7 @@ export const sendMail = (email, subject, text, html) => {
 		html: html,
 	};
 
-	transporter
+	smtpTransporter
 		.sendMail(mailOptions)
 		.then(() => {
 			console.log("Email sent");

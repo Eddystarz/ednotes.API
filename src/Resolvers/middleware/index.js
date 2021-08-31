@@ -3,43 +3,43 @@ import { combineResolvers, skip } from "graphql-resolvers";
 
 // Protection for all logged in users
 export const isAuthenticated = (_, __, { logged_in_user }) =>
-  
-  logged_in_user
-    ? skip
-    : new AuthenticationError("Access Denied! Please login to continue");
+	// add verified here
+	logged_in_user
+		? skip
+		: new AuthenticationError("Access Denied! Please login to continue");
 
 // Protection for regular users
 export const isUser = combineResolvers(isAuthenticated, (_, __, { userType }) =>
-  userType === "user" || userType === "admin"
-    ? skip
-    : new AuthenticationError("Not Authorized to perform this action")
+	userType === "user" || userType === "admin"
+		? skip
+		: new AuthenticationError("Not Authorized to perform this action")
 );
 
 // Protection for students
 export const isStudent = combineResolvers(
-  isAuthenticated,
-  (_, __, { userType }) =>
-    userType === "student"
-      ? skip
-      : new AuthenticationError("Not Authorized to perform this action")
+	isAuthenticated,
+	(_, __, { userType }) =>
+		userType === "student"
+			? skip
+			: new AuthenticationError("Not Authorized to perform this action")
 );
 
 // Protection for Admin previlages
 export const isAdmin = combineResolvers(
-  isAuthenticated,
-  (_, __, { userType }) =>
-    userType === "admin"
-      ? skip
-      : new AuthenticationError("Not Authorized to perform this action")
+	isAuthenticated,
+	(_, __, { userType }) =>
+		userType === "admin"
+			? skip
+			: new AuthenticationError("Not Authorized to perform this action")
 );
 
 // Protection for Super Admin previlages
 export const isSuperAdmin = combineResolvers(
-  isAuthenticated,
-  (_, __, { userType }) =>
-    userType === "super_admin"
-      ? skip
-      : new AuthenticationError("Not Authorized to perform this action")
+	isAuthenticated,
+	(_, __, { userType }) =>
+		userType === "super_admin"
+			? skip
+			: new AuthenticationError("Not Authorized to perform this action")
 );
 
 // module.exports.isTaskOwner = async (_,{ id }, {loggedInUserId}) => {

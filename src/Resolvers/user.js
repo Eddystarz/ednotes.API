@@ -11,7 +11,7 @@ import User from "../database/Models/user";
 import { isAuthenticated, isAdmin, isUser, isSuperAdmin } from "./middleware";
 import { pubsub } from "../subscription";
 import UserTopics from "../subscription/events/user";
-import { sendMail } from "../services/email_service";
+import { htmlToSend, sendMail } from "../services/email_service";
 
 const { JWT_SECRET_KEY } = config;
 export default {
@@ -81,10 +81,10 @@ export default {
           Hello ${result.name}, <br /> Please verify your account by clicking the link: <a href="${links}"> </a>
           <br /> Thank You!
         `;
-				sendMail(result.email, subject, text, html);
+				sendMail(result.email, subject, text, htmlToSend(html));
 
 				return {
-					message: "Account created successfully",
+					message: "Account created successfully, check your email for code",
 					value: true,
 					user: result,
 				};
