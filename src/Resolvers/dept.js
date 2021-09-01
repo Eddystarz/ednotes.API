@@ -7,13 +7,13 @@ import School from "../database/Models/school";
 import Faculty from "../database/Models/faculty";
 
 // ============= Services ===============//
-import { isAdmin } from "./middleware";
+import { isAdmin, isAuthenticated } from "./middleware";
 import { pubsub } from "../subscription";
 import UserTopics from "../subscription/events/user";
 
 export default {
 	Query: {
-		depts: combineResolvers(isAdmin, async () => {
+		depts: combineResolvers(isAuthenticated, async () => {
 			try {
 				const depts = await Dept.find();
 				if (!depts) {
@@ -25,7 +25,7 @@ export default {
 			}
 		}),
 
-		dept: combineResolvers(isAdmin, async (_, { id }) => {
+		dept: combineResolvers(isAuthenticated, async (_, { id }) => {
 			try {
 				const dept = await Dept.findById(id);
 				if (!dept) {
