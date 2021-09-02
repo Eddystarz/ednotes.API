@@ -1,6 +1,6 @@
 import Agenda from "agenda";
 
-import config from "../utils/config";
+import config from "../helper/config";
 
 // ============= CRON FUNCTIONS ===============//
 import { deleteStory } from "./jobs";

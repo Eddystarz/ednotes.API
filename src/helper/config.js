@@ -12,6 +12,7 @@ const {
 	CLOUDINARY_API_SECRET,
 	MG_API_KEY,
 	MG_DOMAIN,
+	TOTP_KEY,
 } = process.env;
 
 export default {
@@ -24,4 +25,5 @@ export default {
 	CLOUDINARY_API_SECRET,
 	MG_API_KEY,
 	MG_DOMAIN,
+	TOTP_KEY,
 };

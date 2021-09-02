@@ -3,7 +3,7 @@ import mg from "nodemailer-mailgun-transport";
 import handlebars from "handlebars";
 import fs from "fs";
 import path from "path";
-import config from "../utils/config";
+import config from "../helper/config";
 const { MG_API_KEY, MG_DOMAIN } = config;
 
 const mgAuth = {

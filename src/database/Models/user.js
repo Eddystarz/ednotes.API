@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import config from "../../utils/config";
+import config from "../../helper/config";
 const { EMAIL_SECRET, JWT_SECRET_KEY } = config;
 const userSchema = new Schema(
 	{

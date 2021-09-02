@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import config from "../../utils/config";
+import config from "../../helper/config";
 const { MONGO_DB_URI } = config;
 
 mongoose.Promise = global.Promise; // To Use Promises With Mongoose
