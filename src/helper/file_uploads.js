@@ -1,5 +1,5 @@
 import cloudinary from "cloudinary";
-import config from "../utils/config";
+import config from "./config";
 const { CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = config;
 
 cloudinary.config({

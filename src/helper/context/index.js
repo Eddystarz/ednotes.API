@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import config from "../../utils/config";
+import config from "../config";
 const { JWT_SECRET_KEY } = config;
 
 // Auth function to verify logged in user

@@ -6,7 +6,7 @@ import { verifyUser } from "./helper/context";
 import { agenda } from "./services/agenda";
 import resolvers from "./Resolvers";
 import typeDefs from "./typeDefs";
-import config from "./utils/config";
+import config from "./helper/config";
 const { NODE_ENV } = config;
 
 const graphQlServer = async (app, PORT) => {

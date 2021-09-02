@@ -2,7 +2,7 @@ import { ApolloError } from "apollo-server-express";
 import jwt from "jsonwebtoken";
 import { combineResolvers } from "graphql-resolvers";
 
-import config from "../utils/config";
+import config from "../helper/config";
 
 // ========== Models ==============//
 import User from "../database/Models/user";
