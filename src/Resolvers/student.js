@@ -47,28 +47,19 @@ export default {
 	},
 
 	Mutation: {
-		studentSignup: async (_, { input }) => {
+		createStudentProfile: async (_, { input }, { Id }) => {
 			try {
-				const lowercase = input.email.toLowerCase();
-				const user = await User.findOne({ email: lowercase });
+				const student = await Student.findOne({ user: Id });
 
-				if (user) {
+				if (student) {
 					return {
-						message: "User with this email already exists",
+						message: "Student profile already created",
 						value: false,
 					};
 				}
 
-				const newUser = new User({
-					email: lowercase,
-					userType: "student",
-					...input,
-				});
-				const result_user = await newUser.save();
-
 				const newStudent = new Student({
-					user: result_user._id,
-					phoneNumber: input.phoneNumber,
+					user: Id,
 					state: input.state,
 					school: input.school,
 					faculty: input.faculty,
@@ -79,11 +70,11 @@ export default {
 				const result_student = await newStudent.save();
 
 				await Level.findByIdAndUpdate(input.level, {
-					$addToSet: { students: result_user._id },
+					$addToSet: { students: result_student._id },
 				});
 
 				return {
-					message: "Account created successfully",
+					message: "Profile created successfully",
 					value: true,
 					student: result_student,
 				};
@@ -92,21 +83,24 @@ export default {
 			}
 		},
 
-		updateStudent: combineResolvers(isStudent, async (_, args, { Id }) => {
-			try {
-				const student = await Student.findByIdAndUpdate(Id, args, {
-					new: true,
-				});
+		updateStudentProfile: combineResolvers(
+			isStudent,
+			async (_, args, { Id }) => {
+				try {
+					const student = await Student.findOneAndUpdate({ user: Id }, args, {
+						new: true,
+					});
 
-				return {
-					message: "Student updated successfully",
-					value: true,
-					student,
-				};
-			} catch (err) {
-				throw err;
+					return {
+						message: "Student updated successfully",
+						value: true,
+						student,
+					};
+				} catch (err) {
+					throw err;
+				}
 			}
-		}),
+		),
 	},
 
 	Subscription: {

@@ -3,6 +3,10 @@ import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
 import Course from "../database/Models/course";
+import School from "../database/Models/school";
+import Faculty from "../database/Models/faculty";
+import Dept from "../database/Models/department";
+import Level from "../database/Models/level";
 
 // ============= Services ===============//
 import { isAdmin, isAuthenticated } from "./middleware";
@@ -145,5 +149,13 @@ export default {
 				throw error;
 			}
 		}),
+	},
+
+	// Type relations to get data for other types when quering for course topics
+	Course: {
+		school: (_) => School.findById(_.school),
+		faculty: (_) => Faculty.findById(_.faculty),
+		dept: (_) => Dept.findById(_.dept),
+		level: (_) => Level.findById(_.level),
 	},
 };
