@@ -151,7 +151,7 @@ export default {
 		}),
 	},
 
-	// Type relations to get data for other types when quering for course topics
+	// Type relations to get data for other types when quering for course
 	Course: {
 		school: (_) => School.findById(_.school),
 		faculty: (_) => Faculty.findById(_.faculty),
