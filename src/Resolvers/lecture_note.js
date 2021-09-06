@@ -11,194 +11,191 @@ import { isAdmin, isAuthenticated } from "./middleware";
 import { processUpload } from "../helper/file_uploads";
 
 export default {
-  Query: {
-    get_topic_notes: async (_, { cursor, limit, topicId }) => {
-      try {
-        let notes;
+	Query: {
+		get_topic_notes: async (_, { cursor, limit, topicId }) => {
+			try {
+				let notes;
 
-        if (cursor) {
-          notes = await LectureNote.find({
-            courseTopic: topicId,
-            createdAt: { $lt: cursor }
-          })
-            .limit(limit + 1)
-            .sort({ createdAt: -1 });
+				if (cursor) {
+					notes = await LectureNote.find({
+						courseTopic: topicId,
+						createdAt: { $lt: cursor },
+					})
+						.limit(limit + 1)
+						.sort({ createdAt: -1 });
 
-          if (notes.length === 0) {
-            return {
-              edges: notes
-            };
-          } else if (notes.length > 0) {
-            const hasNextPage = notes.length > limit;
-            const edges = hasNextPage ? notes.slice(0, -1) : notes;
+					if (notes.length === 0) {
+						return {
+							edges: notes,
+						};
+					} else if (notes.length > 0) {
+						const hasNextPage = notes.length > limit;
+						const edges = hasNextPage ? notes.slice(0, -1) : notes;
 
-            return {
-              edges,
-              pageInfo: {
-                hasNextPage,
-                endCursor: edges[edges.length - 1].createdAt
-              }
-            };
-          }
-        } else {
-          notes = await LectureNote.find({ courseTopic: topicId })
-            .limit(limit + 1)
-            .sort({ createdAt: -1 });
+						return {
+							edges,
+							pageInfo: {
+								hasNextPage,
+								endCursor: edges[edges.length - 1].createdAt,
+							},
+						};
+					}
+				} else {
+					notes = await LectureNote.find({ courseTopic: topicId })
+						.limit(limit + 1)
+						.sort({ createdAt: -1 });
 
-          console.log("NOTES");
-          console.log(notes);
+					if (notes.length === 0) {
+						return {
+							edges: notes,
+						};
+					} else if (notes.length > 0) {
+						const hasNextPage = notes.length > limit;
+						const edges = hasNextPage ? notes.slice(0, -1) : notes;
+						return {
+							edges,
+							pageInfo: {
+								hasNextPage,
+								endCursor: edges[edges.length - 1].createdAt,
+							},
+						};
+					}
+				}
+				throw new ApolloError(
+					"Something went wrong while trying to fetch notes"
+				);
+			} catch (error) {
+				throw error;
+			}
+		},
 
-          if (notes.length === 0) {
-            return {
-              edges: notes
-            };
-          } else if (notes.length > 0) {
-            const hasNextPage = notes.length > limit;
-            const edges = hasNextPage ? notes.slice(0, -1) : notes;
-            return {
-              edges,
-              pageInfo: {
-                hasNextPage,
-                endCursor: edges[edges.length - 1].createdAt
-              }
-            };
-          }
-        }
-        throw new ApolloError(
-          "Something went wrong while trying to fetch notes"
-        );
-      } catch (error) {
-        throw error;
-      }
-    },
+		get_single_note: combineResolvers(
+			isAuthenticated,
+			async (_, { noteId }) => {
+				try {
+					const note = await LectureNote.findById(noteId);
 
-    get_single_note: combineResolvers(
-      isAuthenticated,
-      async (_, { noteId }) => {
-        try {
-          const note = await LectureNote.findById(noteId);
+					if (!note) {
+						return {
+							message: "Note not found",
+							value: false,
+						};
+					}
 
-          if (!note) {
-            return {
-              message: "Note not found",
-              value: false
-            };
-          }
+					return {
+						message: "Data found",
+						value: true,
+						note,
+					};
+				} catch (error) {
+					throw error;
+				}
+			}
+		),
+	},
 
-          return {
-            message: "Data found",
-            value: true,
-            note
-          };
-        } catch (error) {
-          throw error;
-        }
-      }
-    )
-  },
+	Mutation: {
+		createLectureNote: combineResolvers(isAdmin, async (_, args) => {
+			try {
+				const newNote = new LectureNote({
+					...args,
+				});
 
-  Mutation: {
-    createLectureNote: combineResolvers(isAdmin, async (_, args) => {
-      try {
-        const newNote = new LectureNote({
-          ...args
-        });
+				const savedNote = await newNote.save();
 
-        const savedNote = await newNote.save();
+				return {
+					message: "Lecture note created successfully",
+					value: true,
+					note: savedNote,
+				};
+			} catch (error) {
+				throw error;
+			}
+		}),
 
-        return {
-          message: "Lecture note created successfully",
-          value: true,
-          note: savedNote
-        };
-      } catch (error) {
-        throw error;
-      }
-    }),
+		updateNote: combineResolvers(isAdmin, async (_, args) => {
+			try {
+				const updatedNote = await LectureNote.findByIdAndUpdate(
+					args.noteId,
+					args,
+					{
+						new: true,
+					}
+				);
 
-    updateNote: combineResolvers(isAdmin, async (_, args) => {
-      try {
-        const updatedNote = await LectureNote.findByIdAndUpdate(
-          args.topicId,
-          args,
-          {
-            new: true
-          }
-        );
+				return {
+					message: "Note updated successfully",
+					value: true,
+					note: updatedNote,
+				};
+			} catch (error) {
+				throw error;
+			}
+		}),
 
-        return {
-          message: "Note updated successfully",
-          value: true,
-          note: updatedNote
-        };
-      } catch (error) {
-        throw error;
-      }
-    }),
+		deleteNote: combineResolvers(isAdmin, async (_, { noteId }) => {
+			try {
+				await LectureNote.findByIdAndRemove(noteId);
 
-    deleteNote: combineResolvers(isAdmin, async (_, { noteId }) => {
-      try {
-        await LectureNote.findByIdAndRemove(noteId);
+				return {
+					message: "Note deleted successfully",
+					value: true,
+				};
+			} catch (error) {
+				throw error;
+			}
+		}),
 
-        return {
-          message: "Note deleted successfully",
-          value: true
-        };
-      } catch (error) {
-        throw error;
-      }
-    }),
+		uploadNoteAttachments: combineResolvers(isAdmin, async (_, args) => {
+			try {
+				const filePromise = await args.file;
+				const isPdf = filePromise.mimetype.includes("pdf");
+				const isVideo = filePromise.mimetype.includes("video");
 
-    uploadNoteAttachments: combineResolvers(isAdmin, async (_, args) => {
-      try {
-        const filePromise = await args.file;
-        const isPdf = filePromise.mimetype.includes("pdf");
-        const isVideo = filePromise.mimetype.includes("video");
+				if (!isPdf && !isVideo) {
+					return {
+						message: "Make sure you are uploading a video or pdf file",
+						value: false,
+					};
+				}
 
-        if (!isPdf && !isVideo) {
-          return {
-            message: "Make sure you are uploading a video or pdf file",
-            value: false
-          };
-        }
+				const mime_type = isPdf ? "pdf" : "video";
 
-        const mime_type = isPdf ? "pdf" : "video";
+				const uploadData = await processUpload(args.file);
 
-        const uploadData = await processUpload(args.file);
+				const updatedNote = await LectureNote.findByIdAndUpdate(
+					args.lectureNoteId,
+					{
+						$push: {
+							noteAttachments: {
+								$each: [
+									{
+										url: uploadData.path,
+										file_name: uploadData.filename,
+										mime_type,
+									},
+								],
+								$sort: { date_uploaded: -1 },
+							},
+						},
+					},
+					{ new: true }
+				);
 
-        const updatedNote = await LectureNote.findByIdAndUpdate(
-          args.lectureNoteId,
-          {
-            $push: {
-              noteAttachments: {
-                $each: [
-                  {
-                    url: uploadData.path,
-                    file_name: uploadData.filename,
-                    mime_type
-                  }
-                ],
-                $sort: { date_uploaded: -1 }
-              }
-            }
-          },
-          { new: true }
-        );
+				return {
+					message: "File uploaded",
+					value: true,
+					note: updatedNote,
+				};
+			} catch (error) {
+				throw error;
+			}
+		}),
+	},
 
-        return {
-          message: "File uploaded",
-          value: true,
-          note: updatedNote
-        };
-      } catch (error) {
-        throw error;
-      }
-    })
-  },
-
-  // Type relations to get data for other types when quering for lecture notes
-  LectureNote: {
-    course: (_) => Course.findById(_.course),
-    courseTopic: (_) => CourseTopic.findById(_.courseTopic)
-  }
+	// Type relations to get data for other types when quering for lecture notes
+	LectureNote: {
+		course: (_) => Course.findById(_.course),
+		courseTopic: (_) => CourseTopic.findById(_.courseTopic),
+	},
 };
