@@ -1,4 +1,4 @@
-import { ApolloError } from "apollo-server-express";
+import { ApolloError, UserInputError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
@@ -153,15 +153,19 @@ export default {
 				const isVideo = filePromise.mimetype.includes("video");
 
 				if (!isPdf && !isVideo) {
-					return {
-						message: "Make sure you are uploading a video or pdf file",
-						value: false,
-					};
+					throw new UserInputError(
+						"Make sure you are uploading a video or pdf file"
+					);
+					// return {
+					// 	message: "Make sure you are uploading a video or pdf file",
+					// 	value: false,
+					// };
 				}
 
 				const mime_type = isPdf ? "pdf" : "video";
 
 				const uploadData = await processUpload(args.file);
+				console.log("what's uploaded", uploadData);
 
 				const updatedNote = await LectureNote.findByIdAndUpdate(
 					args.lectureNoteId,
@@ -188,6 +192,7 @@ export default {
 					note: updatedNote,
 				};
 			} catch (error) {
+				// console.error("th error", error);
 				throw error;
 			}
 		}),

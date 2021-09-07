@@ -16,13 +16,17 @@ export const processUpload = async (file) => {
 		const result = await new Promise((resolve, reject) => {
 			console.log("Promise called");
 			createReadStream().pipe(
-				cloudinary.v2.uploader.upload_stream((error, result) => {
-					if (error) {
-						reject(error);
-					}
+				cloudinary.v2.uploader.upload_stream(
+					{ resource_type: "auto" },
+					(error, result) => {
+						if (error) {
+							console.log("where error fails", error);
+							reject(error);
+						}
 
-					resolve(result);
-				})
+						resolve(result);
+					}
+				)
 			);
 		});
 

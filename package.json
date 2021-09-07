@@ -7,6 +7,8 @@
     "migrate": "sequelize db:migrate",
     "clean": "rm -rf build && mkdir build",
     "deploy": "git add . && git commit -m Heroku && git push heroku main",
+    "pp": "console.log(process.argv)",
+    "commit": "git add . && git commit -m",
     "dev": "NODE_ENV=development & babel-watch ./src/index.js",
     "dev_win": "SET NODE_ENV=development & babel-watch ./src/index.js",
     "start": "npm run build & SET NODE_ENV=production & babel-watch ./src/index.js",
@@ -15,7 +17,7 @@
     "build-server": "babel -d ./build ./src -s",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "DAABS",
+  "author": "dareedyone",
   "license": "MIT",
   "dependencies": {
     "@babel/cli": "^7.14.3",
