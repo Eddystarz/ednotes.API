@@ -1,65 +1,65 @@
 import { gql } from "apollo-server-express";
 
 export default gql`
-  extend type Query {
-    get_single_note(noteId: ID!): LectureNoteStatus
+	extend type Query {
+		get_single_note(noteId: ID!): LectureNoteStatus
 
-    """
-    Get notes belonging to a coursetopic
-    """
-    get_topic_notes(
-      cursor: String
-      limit: Int
-      topicId: ID!
-    ): LectureNoteConnection
-  }
+		"""
+		Get notes belonging to a coursetopic
+		"""
+		get_topic_notes(
+			cursor: String
+			limit: Int
+			topicId: ID!
+		): LectureNoteConnection
+	}
 
-  extend type Mutation {
-    createLectureNote(
-      course: ID!
+	extend type Mutation {
+		createLectureNote(
+			course: ID!
 
-      courseTopic: ID!
+			courseTopic: ID!
 
-      name: String
+			name: String
 
-      text: String
-    ): LectureNoteStatus
+			text: String
+		): LectureNoteStatus
 
-    updateNote(noteId: ID!, text: String, name: String): LectureNoteStatus
+		updateNote(noteId: ID!, text: String, name: String): LectureNoteStatus
 
-    """
-    Add attachments (Pdf/Video) to a lecture note...The lecture note must have been created
-    first..
-    """
-    uploadNoteAttachments(lectureNoteId: ID!, file: Upload!): LectureNoteStatus
+		"""
+		Add attachments (Pdf/Video) to a lecture note...The lecture note must have been created
+		first..
+		"""
+		uploadNoteAttachments(lectureNoteId: ID!, file: Upload!): LectureNoteStatus
 
-    deleteNote(noteId: ID!): LectureNoteStatus
+		deleteNote(noteId: ID!): LectureNoteStatus
 
-    test(file: Upload): Boolean
-  }
+		test(file: Upload): Boolean
+	}
 
-  type LectureNote {
-    _id: ID!
+	type LectureNote {
+		_id: ID!
 
-    course: Course!
+		course: Course!
 
-    courseTopic: Topic!
+		courseTopic: Topic!
 
-    name: String!
+		name: String!
 
-    text: String!
+		text: String!
 
-    noteAttachments: [FileType!]
-  }
+		noteAttachments: [FileType!]
+	}
 
-  type LectureNoteStatus {
-    message: String!
-    value: Boolean!
-    note: LectureNote
-  }
+	type LectureNoteStatus {
+		message: String!
+		value: Boolean!
+		note: LectureNote
+	}
 
-  type LectureNoteConnection {
-    edges: [LectureNote!]!
-    pageInfo: PageInfo
-  }
+	type LectureNoteConnection {
+		edges: [LectureNote!]!
+		pageInfo: PageInfo
+	}
 `;

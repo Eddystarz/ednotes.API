@@ -13,27 +13,29 @@ import storyResolver from "./edstory";
 import courseResolver from "./course";
 import topicResolver from "./course_topic";
 import lectureNoteResolver from "./lecture_note";
+// import rewardPointResolver from "./reward_point";
 
 const customDateScalarResolver = {
-  Date: GraphQLDateTime
+	Date: GraphQLDateTime,
 };
 
 const customFileUploadResolver = {
-  Upload: GraphQLUpload
+	Upload: GraphQLUpload,
 };
 
 export default [
-  userResolver,
-  schoolResolver,
-  facultyResolver,
-  deptResolver,
-  levelResolver,
-  studentResolver,
-  newsResolver,
-  storyResolver,
-  courseResolver,
-  topicResolver,
-  lectureNoteResolver,
-  customDateScalarResolver,
-  customFileUploadResolver
+	userResolver,
+	schoolResolver,
+	facultyResolver,
+	deptResolver,
+	levelResolver,
+	studentResolver,
+	newsResolver,
+	storyResolver,
+	courseResolver,
+	topicResolver,
+	lectureNoteResolver,
+	customDateScalarResolver,
+	customFileUploadResolver,
+	// rewardPointResolver,
 ];

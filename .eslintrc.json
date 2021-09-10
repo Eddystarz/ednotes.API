@@ -50,6 +50,7 @@
     "import/no-extraneous-dependencies": "off",
     "one-var": "off",
     "import/no-mutable-exports": "off",
+    "no-tabs": "off",   
     "no-useless-concat": "off",
     "radix": "off",
     "eol-last": "warn",

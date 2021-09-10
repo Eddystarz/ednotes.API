@@ -12,34 +12,36 @@ import genericTypeDefs from "./generic";
 import courseTypeDefs from "./course";
 import topicTypeDefs from "./course_topic";
 import lectureTypeDefs from "./lecture_notes";
+// import rewardTypeDefs from "./reward_point";
 
 const typeDefs = gql`
-  scalar Date
-  scalar Upload
+	scalar Date
+	scalar Upload
 
-  type Query {
-    _: String
-  }
-  type Mutation {
-    _: String
-  }
-  type Subscription {
-    _: String
-  }
+	type Query {
+		_: String
+	}
+	type Mutation {
+		_: String
+	}
+	type Subscription {
+		_: String
+	}
 `;
 
 export default [
-  typeDefs,
-  userTypeDefs,
-  schoolTypeDefs,
-  facultyTypeDefs,
-  deptTypeDefs,
-  levelTypeDefs,
-  studentTypeDefs,
-  newsTypeDefs,
-  storyTypeDefs,
-  genericTypeDefs,
-  courseTypeDefs,
-  topicTypeDefs,
-  lectureTypeDefs
+	typeDefs,
+	userTypeDefs,
+	schoolTypeDefs,
+	facultyTypeDefs,
+	deptTypeDefs,
+	levelTypeDefs,
+	studentTypeDefs,
+	newsTypeDefs,
+	storyTypeDefs,
+	genericTypeDefs,
+	courseTypeDefs,
+	topicTypeDefs,
+	lectureTypeDefs,
+	// rewardTypeDefs,
 ];
