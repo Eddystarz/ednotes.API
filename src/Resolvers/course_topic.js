@@ -7,6 +7,7 @@ import Course from "../database/Models/course";
 
 // ============= Services ===============//
 import { isAdmin, isAuthenticated } from "./middleware";
+import LectureNote from "../database/Models/lecture_notes";
 
 export default {
 	Query: {
@@ -74,7 +75,7 @@ export default {
 			isAuthenticated,
 			async (_, { topicId }) => {
 				try {
-					const course = await CourseTopic.findById(topicId);
+					const course = await CourseTopic.findById(topicId).populate("course");
 
 					if (!course) {
 						return {
@@ -101,7 +102,9 @@ export default {
 				const newTopic = new CourseTopic({
 					...args,
 				});
-
+				await Course.findByIdAndUpdate(newTopic.course, {
+					$addToSet: { courseTopics: newTopic._id },
+				});
 				const savedCourse = await newTopic.save();
 
 				return {
@@ -151,5 +154,6 @@ export default {
 	// Type relations to get data for other types when quering for course topics
 	Topic: {
 		course: (_) => Course.findById(_.course),
+		lectureNotes: (_) => LectureNote.find({ _id: _.lectureNotes }),
 	},
 };

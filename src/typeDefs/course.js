@@ -1,64 +1,67 @@
 import { gql } from "apollo-server-express";
 
 export default gql`
-  extend type Query {
-    """
-    Fetch single course
-    """
-    get_single_course(courseId: ID!): DataStatus
-    get_all_courses(cursor: String, limit: Int): CourseConnection
-  }
+	extend type Query {
+		"""
+		Fetch single course
+		"""
+		get_single_course(courseId: ID!): DataStatus
+		get_all_courses(cursor: String, limit: Int): CourseConnection
+		get_user_courses(cursor: String, limit: Int): CourseConnection
+	}
 
-  extend type Mutation {
-    createCourse(
-      school: ID
+	extend type Mutation {
+		createCourse(
+			school: ID
 
-      faculty: ID
+			faculty: ID
 
-      dept: ID
+			dept: ID
 
-      level: ID
+			level: ID
 
-      name: String
+			name: String
 
-      description: String
+			description: String
 
-      semester: String
-    ): DataStatus
+			semester: String
+		): DataStatus
 
-    editCourse(
-      courseId: ID!
-      name: String
-      description: String
-      semester: String
-    ): DataStatus
+		editCourse(
+			courseId: ID!
+			name: String
+			description: String
+			semester: String
+		): DataStatus
 
-    """
-    "At no point is the deleted news data returned in this request
-    """
-    deleteCourse(courseId: ID!): DataStatus
-  }
+		"""
+		"At no point is the deleted news data returned in this request
+		"""
+		deleteCourse(courseId: ID!): DataStatus
+	}
 
-  type Course {
-    _id: ID!
+	type Course {
+		_id: ID!
 
-    school: School
+		school: School
 
-    faculty: Faculty
+		faculty: Faculty
 
-    dept: Dept
+		dept: Dept
 
-    level: Level
+		level: Level
 
-    name: String
+		name: String
 
-    description: String
+		description: String
 
-    semester: String
-  }
+		semester: String
 
-  type CourseConnection {
-    edges: [Course!]!
-    pageInfo: PageInfo
-  }
+		courseTopics: [Topic]
+	}
+
+	type CourseConnection {
+		edges: [Course]
+		pageInfo: PageInfo
+	}
 `;

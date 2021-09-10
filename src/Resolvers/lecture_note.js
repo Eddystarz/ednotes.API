@@ -4,7 +4,7 @@ import { combineResolvers } from "graphql-resolvers";
 // ========== Models ==============//
 import LectureNote from "../database/Models/lecture_notes";
 import CourseTopic from "../database/Models/course_topic";
-import Course from "../database/Models/course";
+// import Course from "../database/Models/course";
 
 // ============= Services ===============//
 import { isAdmin, isAuthenticated } from "./middleware";
@@ -99,6 +99,9 @@ export default {
 			try {
 				const newNote = new LectureNote({
 					...args,
+				});
+				await CourseTopic.findByIdAndUpdate(newNote.courseTopic, {
+					$addToSet: { lectureNotes: newNote._id },
 				});
 
 				const savedNote = await newNote.save();
@@ -199,8 +202,8 @@ export default {
 	},
 
 	// Type relations to get data for other types when quering for lecture notes
-	LectureNote: {
-		course: (_) => Course.findById(_.course),
-		courseTopic: (_) => CourseTopic.findById(_.courseTopic),
-	},
+	// LectureNote: {
+	// 	course: (_) => Course.findById(_.course),
+	// 	courseTopic: (_) => CourseTopic.findById(_.courseTopic),
+	// },
 };

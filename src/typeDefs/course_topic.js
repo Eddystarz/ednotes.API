@@ -1,54 +1,56 @@
 import { gql } from "apollo-server-express";
 
 export default gql`
-  extend type Query {
-    get_single_topic(topicId: ID!): TopicStatus
+	extend type Query {
+		get_single_topic(topicId: ID!): TopicStatus
 
-    """
-    Get topics belonging to a course
-    """
-    get_course_topics(
-      cursor: String
-      limit: Int
-      courseId: ID!
-    ): TopicConnection
-  }
+		"""
+		Get topics belonging to a course
+		"""
+		get_course_topics(
+			cursor: String
+			limit: Int
+			courseId: ID!
+		): TopicConnection
+	}
 
-  extend type Mutation {
-    createTopic(
-      course: ID!
+	extend type Mutation {
+		createTopic(
+			course: ID!
 
-      name: String!
+			name: String!
 
-      description: String!
-    ): TopicStatus
+			description: String!
+		): TopicStatus
 
-    editTopic(topicId: ID!, name: String, description: String): TopicStatus
+		editTopic(topicId: ID!, name: String, description: String): TopicStatus
 
-    """
-    "At no point is the deleted news data returned in this request
-    """
-    deleteTopic(topicId: ID!): TopicStatus
-  }
+		"""
+		"At no point is the deleted news data returned in this request
+		"""
+		deleteTopic(topicId: ID!): TopicStatus
+	}
 
-  type Topic {
-    _id: ID!
+	type Topic {
+		_id: ID!
 
-    course: Course!
+		course: Course!
 
-    name: String!
+		name: String!
 
-    description: String!
-  }
+		description: String!
 
-  type TopicStatus {
-    message: String!
-    value: Boolean!
-    course_topic: Topic
-  }
+		lectureNotes: [LectureNote]
+	}
 
-  type TopicConnection {
-    edges: [Topic!]!
-    pageInfo: PageInfo
-  }
+	type TopicStatus {
+		message: String!
+		value: Boolean!
+		course_topic: Topic
+	}
+
+	type TopicConnection {
+		edges: [Topic!]!
+		pageInfo: PageInfo
+	}
 `;

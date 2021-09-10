@@ -17,6 +17,12 @@ const courseSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: "Level",
 	},
+	courseTopics: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: "CourseTopic",
+		},
+	],
 	name: {
 		type: String,
 		required: true,
