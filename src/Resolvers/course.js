@@ -23,7 +23,9 @@ export default {
 					const student = await Student.findOne({ user: Id });
 
 					if (!student) {
-						throw new ApolloError("You are yet to set your profile !");
+						throw new ApolloError(
+							"No courses here. You are yet to set your profile !"
+						);
 					}
 
 					const where = {

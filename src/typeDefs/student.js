@@ -40,6 +40,7 @@ export default gql`
 		message: String!
 		value: Boolean!
 		student: Student
+		token: String
 	}
 
 	type Student {

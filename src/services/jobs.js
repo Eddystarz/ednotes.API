@@ -8,3 +8,11 @@ export const deleteStory = async (storyId) => {
 		throw err;
 	}
 };
+
+export const deleteOtp = async (storyId) => {
+	try {
+		await Story.findByIdAndRemove(storyId);
+	} catch (err) {
+		throw err;
+	}
+};

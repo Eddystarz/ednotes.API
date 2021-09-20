@@ -60,6 +60,7 @@
     "prefer-destructuring": "off",
     "space-before-blocks": "warn",
     "keyword-spacing": "warn",
-    "space-in-parens": "warn"
+    "space-in-parens": "warn",
+    "no-param-reassign": "off"
   }
 }

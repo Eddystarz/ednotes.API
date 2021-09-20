@@ -1,5 +1,6 @@
 import { ApolloError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
+import jwt from "jsonwebtoken";
 
 // ========== Models ==============//
 import User from "../database/Models/user";
@@ -13,6 +14,8 @@ import Student from "../database/Models/student";
 import { isAdmin, isStudent } from "./middleware";
 import { pubsub } from "../subscription";
 import UserTopics from "../subscription/events/user";
+import config from "../helper/config";
+const { JWT_SECRET_KEY } = config;
 
 export default {
 	Query: {
@@ -67,16 +70,31 @@ export default {
 					level: input.level,
 				});
 
-				const result_student = await newStudent.save();
+				const result_student = await (await newStudent.save())
+					.populate("user")
+					.execPopulate();
+				const user = await User.findByIdAndUpdate(
+					Id,
+					{ userType: "student" },
+					{ new: true }
+				);
 
 				await Level.findByIdAndUpdate(input.level, {
 					$addToSet: { students: result_student._id },
 				});
-
+				const token = jwt.sign(
+					{ userId: Id, userType: user.userType },
+					JWT_SECRET_KEY,
+					{
+						expiresIn: "30d",
+					}
+				);
+				// add the previous token to blacklisted db here
 				return {
 					message: "Profile created successfully",
 					value: true,
 					student: result_student,
+					token,
 				};
 			} catch (error) {
 				throw error;

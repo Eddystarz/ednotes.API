@@ -1,11 +1,13 @@
 import { ApolloError } from "apollo-server-express";
 import jwt from "jsonwebtoken";
 import { combineResolvers } from "graphql-resolvers";
+// import dayjs from "dayjs";
 
 import config from "../helper/config";
 
 // ========== Models ==============//
 import User from "../database/Models/user";
+import Otp from "../database/Models/otp";
 
 // ============= Services ===============//
 import { isAuthenticated, isAdmin, isUser, isSuperAdmin } from "./middleware";
@@ -65,23 +67,33 @@ export default {
 					userType: "user",
 					...input,
 				});
-				const result = await newUser.save();
+
+				console.log("newUser", newUser, "newUser", newUser);
 
 				pubsub.publish(UserTopics.USER_CREATED, {
-					[UserTopics.USER_CREATED]: result,
+					[UserTopics.USER_CREATED]: newUser,
 				});
-
-				const token = result.emailToken();
+				const newOtp = new Otp({
+					user: newUser._id,
+					email: newUser.email,
+					type: "verify_email",
+				});
+				await newOtp.save();
+				// const token = newUser.emailToken();
 				const subject = "Email Confirmation";
-				const url = "localhost";
-				const links = `http://${url}/confirmation/${result.email}/${token.token}`;
+				// const url = "localhost";
+				// const links = `http://${url}/confirmation/${newUser.email}/${token.token}`;
 				const text = "";
 
-				const html = `
-          Hello ${result.name}, <br /> Please verify your account by clicking the link: <a href="${links}"> </a>
-          <br /> Thank You!
-        `;
-				sendMail(result.email, subject, text, htmlToSend(html));
+				await sendMail(
+					newUser.email,
+					subject,
+					text,
+					htmlToSend(newUser.firstName, newOtp.value)
+				);
+				const result = await newUser.save();
+
+				// console.log("not supposed to run");
 
 				return {
 					message: "Account created successfully, check your email for code",
@@ -166,7 +178,9 @@ export default {
 		login: async (_, { input }) => {
 			try {
 				const lowercase = input.email.toLowerCase();
+				console.log("hereee", input.email, input.email.toLowerCase());
 				const user = await User.findOne({ email: lowercase });
+				console.log("user", user);
 
 				if (!user) {
 					return {
@@ -174,7 +188,15 @@ export default {
 						value: false,
 					};
 				}
-				// added await, probably what is breaking ayo fetaure
+				console.log("here", user);
+
+				if (!user.isVerified) {
+					return {
+						message: "Unverified email adress, check you email for code !",
+						value: false,
+					};
+				}
+
 				const isPasswordValid = await user.verifyPass(input.password);
 
 				if (!isPasswordValid) {
@@ -198,16 +220,44 @@ export default {
 		},
 
 		// @TODO: This should be a Rest API Endpoint Instead
-		confirmEmail: async (_, { token }) => {
-			try {
-				jwt.verify(token, JWT_SECRET_KEY);
+		// confirmEmail: async (_, { token }) => {
+		// 	try {
+		// 		jwt.verify(token, JWT_SECRET_KEY);
 
-				return true;
+		// 		return true;
+		// 	} catch (error) {
+		// 		return false;
+		// 	}
+		// },
+
+		confirmEmail: async (_, { token, email }) => {
+			try {
+				email = email.toLowerCase();
+				const matchedOtp = await Otp.findOne({
+					email,
+					value: token,
+					type: "verify_email",
+				});
+
+				if (!matchedOtp) {
+					return {
+						message: "Invalid or expired code!",
+						value: false,
+					};
+				}
+				await User.findOneAndUpdate({ email }, { isVerified: true });
+				await matchedOtp.remove();
+				// const currentDate = dayjs(Date());
+				// const expiredDate = dayjs(matchedOtp.expiredAt);
+				// const diff = expiredDate.diff(currentDate);
+				return {
+					message: "Email verified successfully, proceed to login.",
+					value: true,
+				};
 			} catch (error) {
-				return false;
+				throw error;
 			}
 		},
-
 		// User initiates change of password from forgot password
 		forgotPassword: async (_, { email }) => {
 			try {
@@ -226,7 +276,7 @@ export default {
 				const url = "localhost";
 				const text = "";
 
-				const links = `http://${url}/confirmation/${user.email}/${token.token}`;
+				const links = `http://${url}/confirmation/${user.email}/${token}`;
 				const html = `
           Hello ${user.name}, <br /> You are getting this mail because you have requested for a 
           password reset. This password reset window is limited to twenty minutes. 
@@ -247,7 +297,7 @@ export default {
 			}
 		},
 
-		// Change password from forgot password...(Public route)
+		// Change password from forgot password...(Public route) later
 		changePassword: async (
 			_,
 			{ pass_token, email, new_password, confirm_password }
@@ -340,7 +390,7 @@ export default {
 				}
 			}
 		),
-
+		// limit what they could update later
 		editUser: combineResolvers(isAuthenticated, async (_, args, { Id }) => {
 			try {
 				const user = await User.findByIdAndUpdate(Id, args, {

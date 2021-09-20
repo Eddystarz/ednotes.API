@@ -31,6 +31,7 @@ const graphQlServer = async (app, PORT) => {
 				const header = req.headers.authorization || "";
 
 				const user = await verifyUser(header);
+				// console.log("the token decrypt", user);
 				if (!user) {
 					return {
 						logged_in_user: false,
