@@ -17,7 +17,7 @@ const courseSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: "Level",
 	},
-	// to be used when solving n + 1
+	// to be used in solv n+1
 	// courseTopics: [
 	// 	{
 	// 		type: Schema.Types.ObjectId,

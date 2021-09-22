@@ -225,6 +225,6 @@ export default {
 		faculty: (_) => Faculty.findById(_.faculty),
 		dept: (_) => Dept.findById(_.dept),
 		level: (_) => Level.findById(_.level),
-		courseTopics: (_) => CourseTopic.find({ _id: _.courseTopics }),
+		courseTopics: (_) => CourseTopic.find({ course: _.id }),
 	},
 };
