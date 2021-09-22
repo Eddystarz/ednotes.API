@@ -13,12 +13,13 @@ const courseTopicSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: "Course",
 	},
-	lectureNotes: [
-		{
-			type: Schema.Types.ObjectId,
-			ref: "LectureNote",
-		},
-	],
+	// to be used when solving n + 1
+	// lectureNotes: [
+	// 	{
+	// 		type: Schema.Types.ObjectId,
+	// 		ref: "LectureNote",
+	// 	},
+	// ],
 });
 
 export default mongoose.model("CourseTopic", courseTopicSchema);

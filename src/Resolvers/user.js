@@ -219,7 +219,7 @@ export default {
 			}
 		},
 
-		// @TODO: This should be a Rest API Endpoint Instead
+		// @TODO: This can be a Rest API Endpoint Instead
 		// confirmEmail: async (_, { token }) => {
 		// 	try {
 		// 		jwt.verify(token, JWT_SECRET_KEY);

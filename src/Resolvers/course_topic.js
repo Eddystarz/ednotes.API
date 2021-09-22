@@ -154,6 +154,6 @@ export default {
 	// Type relations to get data for other types when quering for course topics
 	Topic: {
 		course: (_) => Course.findById(_.course),
-		lectureNotes: (_) => LectureNote.find({ _id: _.lectureNotes }),
+		lectureNotes: (_) => LectureNote.find({ courseTopic: _.id }),
 	},
 };

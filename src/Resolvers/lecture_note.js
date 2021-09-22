@@ -3,7 +3,8 @@ import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
 import LectureNote from "../database/Models/lecture_notes";
-import CourseTopic from "../database/Models/course_topic";
+// to be used when solving n + 1
+// import CourseTopic from "../database/Models/course_topic";
 // import Course from "../database/Models/course";
 
 // ============= Services ===============//
@@ -100,9 +101,10 @@ export default {
 				const newNote = new LectureNote({
 					...args,
 				});
-				await CourseTopic.findByIdAndUpdate(newNote.courseTopic, {
-					$addToSet: { lectureNotes: newNote._id },
-				});
+				// to be used when solving n + 1
+				// await CourseTopic.findByIdAndUpdate(newNote.courseTopic, {
+				// 	$addToSet: { lectureNotes: newNote._id },
+				// });
 
 				const savedNote = await newNote.save();
 
