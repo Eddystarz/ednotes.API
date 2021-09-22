@@ -3,6 +3,7 @@ import { combineResolvers } from "graphql-resolvers";
 
 // ========== Models ==============//
 import CourseTopic from "../database/Models/course_topic";
+// to be used when solving n + 1
 import Course from "../database/Models/course";
 
 // ============= Services ===============//
@@ -102,9 +103,10 @@ export default {
 				const newTopic = new CourseTopic({
 					...args,
 				});
-				await Course.findByIdAndUpdate(newTopic.course, {
-					$addToSet: { courseTopics: newTopic._id },
-				});
+				// to  be used when solving n + 1
+				// await Course.findByIdAndUpdate(newTopic.course, {
+				// 	$addToSet: { courseTopics: newTopic._id },
+				// });
 				const savedCourse = await newTopic.save();
 
 				return {
