@@ -245,13 +245,69 @@ export default {
 						value: false,
 					};
 				}
-				await User.findOneAndUpdate({ email }, { isVerified: true });
+				const user = await User.findOne({ email });
+				if (!user)
+					return {
+						message: "You are yet to register with us!",
+						value: false,
+					};
+
 				await matchedOtp.remove();
+				if (user.isVerified)
+					return {
+						message: "Your email has been already verified!",
+						value: false,
+					};
+				user.isVerified = true;
+				await user.save();
 				// const currentDate = dayjs(Date());
 				// const expiredDate = dayjs(matchedOtp.expiredAt);
 				// const diff = expiredDate.diff(currentDate);
 				return {
 					message: "Email verified successfully, proceed to login.",
+					value: true,
+				};
+			} catch (error) {
+				throw error;
+			}
+		},
+		resendCode: async (_, { email }) => {
+			try {
+				email = email.toLowerCase();
+				const user = await User.findOne({ email });
+				if (!user)
+					return {
+						message: "You are yet to register with us!",
+						value: false,
+					};
+
+				if (user.isVerified)
+					return {
+						message: "Your email has been already verified!",
+						value: false,
+					};
+				await Otp.deleteMany({
+					email,
+					type: "verify_email",
+				});
+
+				const newOtp = new Otp({
+					user: user._id,
+					email: user.email,
+					type: "verify_email",
+				});
+				await newOtp.save();
+				const subject = "Email Confirmation";
+				const text = "";
+
+				await sendMail(
+					user.email,
+					subject,
+					text,
+					htmlToSend(user.firstName, newOtp.value)
+				);
+				return {
+					message: "Verification code has now been resend to your email!",
 					value: true,
 				};
 			} catch (error) {

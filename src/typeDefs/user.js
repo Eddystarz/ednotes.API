@@ -32,6 +32,7 @@ export default gql`
 		login(input: loginInput!): UserStatus
 
 		confirmEmail(token: String!, email: String!): GeneralStatus!
+		resendCode(email: String!): GeneralStatus!
 
 		"""
 		Initiate forgot password process for all users
