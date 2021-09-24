@@ -230,12 +230,12 @@ export default {
 		// 	}
 		// },
 
-		confirmEmail: async (_, { token, email }) => {
+		confirmEmail: async (_, { code, email }) => {
 			try {
 				email = email.toLowerCase();
 				const matchedOtp = await Otp.findOne({
 					email,
-					value: token,
+					value: code,
 					type: "verify_email",
 				});
 
@@ -462,6 +462,27 @@ export default {
 				throw error;
 			}
 		}),
+		// for development only
+		removeUserData: async (_, { email }) => {
+			try {
+				const userToBeRemoved = await User.findOne({ email });
+				if (!userToBeRemoved)
+					return {
+						message: "Let's not remove thin air ):",
+						value: false,
+					};
+
+				await User.deleteOne({ user: userToBeRemoved._id });
+				await userToBeRemoved.remove();
+
+				return {
+					message: "User data removed successfully !",
+					value: false,
+				};
+			} catch (error) {
+				throw error;
+			}
+		},
 
 		makeSuperAdmin: combineResolvers(isSuperAdmin, async (_, { userId }) => {
 			try {

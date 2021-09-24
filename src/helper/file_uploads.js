@@ -17,7 +17,7 @@ export const processUpload = async (file) => {
 			console.log("Promise called");
 			createReadStream().pipe(
 				cloudinary.v2.uploader.upload_stream(
-					{ resource_type: "auto" },
+					{ resource_type: "auto", type: "authenticated", sign_url: true },
 					(error, result) => {
 						if (error) {
 							console.log("where error fails", error);
@@ -30,9 +30,9 @@ export const processUpload = async (file) => {
 			);
 		});
 
-		const newPhoto = { filename, path: result.secure_url };
+		const newContent = { filename, path: result.secure_url };
 
-		return newPhoto;
+		return newContent;
 	} catch (err) {
 		throw err;
 	}

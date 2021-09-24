@@ -31,7 +31,7 @@ export default gql`
 		"""
 		login(input: loginInput!): UserStatus
 
-		confirmEmail(token: String!, email: String!): GeneralStatus!
+		confirmEmail(code: String!, email: String!): GeneralStatus!
 		resendCode(email: String!): GeneralStatus!
 
 		"""
@@ -63,6 +63,10 @@ export default gql`
 			username: String
 			phoneNumber: String
 		): UserStatus!
+		"""
+		for dev only or admin use
+		"""
+		removeUserData(email: String!): GeneralStatus!
 
 		makeSuperAdmin(userId: ID!): UserStatus!
 	}
