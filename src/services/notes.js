@@ -53,9 +53,10 @@ export const getAttachment = async (req, res) => {
 			(attachment) => attachment.proxy_url === proxy_url
 		);
 		console.log("cau", cloudAttachmentUrl, cloudAttachmentUrl.url);
-		await axios
-			.get(cloudAttachmentUrl.url, { responseType: "stream" })
-			.pipe(res);
+		const response = await axios.get(cloudAttachmentUrl.url, {
+			responseType: "stream",
+		});
+		response.data.pipe(res);
 		// console.log("data", typeof data);
 		// res.set({
 		// 	"Content-Type": "video/mp4;codecs=avc1",
