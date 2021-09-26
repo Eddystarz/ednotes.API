@@ -18,7 +18,7 @@ export const getAttachment = async (req, res) => {
 		const student = await Student.findOne({ user: userId });
 		console.log("student", student);
 		const note = await LectureNote.findOne({
-			"noteAttachments.proxy_url": proxy_url,
+			noteAttachments: { $elemMatch: { proxy_url } },
 		});
 		// .populate("course");
 
@@ -28,7 +28,13 @@ export const getAttachment = async (req, res) => {
 		const rightCourse =
 			student?.dept === note?.course.dept &&
 			student?.level === note?.course.level;
-		console.log("right", !rightCourse, !student, !student && !rightCourse);
+		console.log(
+			"right",
+			!rightCourse,
+			!note,
+			!student,
+			!student && !rightCourse
+		);
 		if (!student || !note || !rightCourse) {
 			console.log("return");
 			return res.status(401).send({
