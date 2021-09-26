@@ -21,13 +21,6 @@ export const getAttachment = async (req, res) => {
 		const note = await LectureNote.findOne({
 			noteAttachments: { $elemMatch: { proxy_url } },
 		}).populate("course");
-		// const tets =	{
-		// 		noteAttachments: {
-		// 			$elemMatch: {
-		// 				url: "https://res.cloudinary.com/drd/video/authenticated/s--T6QILcH8--/v1632658161/x53o2bpsraefneu6oetr.mp4";
-		// 			}
-		// 		}
-		// 	}
 
 		console.log("note", note);
 
@@ -59,7 +52,8 @@ export const getAttachment = async (req, res) => {
 		const cloudAttachmentUrl = note.noteAttachments.find(
 			(attachment) => attachment.proxy_url === proxy_url
 		);
-		const data = await axios.get(cloudAttachmentUrl.url).data;
+		console.log("cau", cloudAttachmentUrl, cloudAttachmentUrl.url);
+		const data = await axios.get(cloudAttachmentUrl.url);
 		console.log("data", data);
 		res.send(data);
 	} catch (err) {
