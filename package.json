@@ -28,6 +28,7 @@
     "@babel/runtime": "^7.14.0",
     "agenda": "3.1.0",
     "apollo-server-express": "^2.19.2",
+    "axios": "^0.21.4",
     "babel-watch": "^7.4.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.26.0",

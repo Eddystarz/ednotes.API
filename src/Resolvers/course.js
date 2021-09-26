@@ -29,7 +29,7 @@ export default {
 					}
 
 					const where = {
-						department: student.department,
+						dept: student.dept,
 						level: student.level,
 					};
 

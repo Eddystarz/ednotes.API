@@ -13,11 +13,11 @@ export default gql`
 	}
 
 	type FileType {
-		_id: ID
 		"""
-		Url refrence for file in cloud storage
+		_id: ID ---- commented
+		Url reference for file mapping to cloud storage
 		"""
-		url: String
+		proxy_url: String
 		"""
 		Name of file Uploaded
 		"""

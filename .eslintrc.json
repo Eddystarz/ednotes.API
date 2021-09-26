@@ -21,7 +21,7 @@
     "no-lonely-if": "off",
     "nonblock-statement-body-position": "off",
     "no-shadow": "off",
-    "consistent-return": "warn",
+    "consistent-return": "off",
     "no-confusing-arrow": "off",
     "import/newline-after-import": "off",
     "no-trailing-spaces": "off",
@@ -64,5 +64,6 @@
     "keyword-spacing": "warn",
     "space-in-parens": "warn",
     "no-param-reassign": "off"
+   
   }
 }
