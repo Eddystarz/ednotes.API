@@ -33,20 +33,20 @@ export const getAttachment = async (req, res) => {
 
 		// change to sub check later by using level
 		const rightCourse =
-			student?.school === note?.course.school &&
-			student?.faculty === note?.course.faculty &&
-			student?.dept === note?.course.dept &&
-			student?.level === note?.course.level;
+			student?.school.toString() === note?.course.school.toString() &&
+			student?.faculty.toString() === note?.course.faculty.toString() &&
+			student?.dept.toString() === note?.course.dept.toString() &&
+			student?.level.toString() === note?.course.level.toString();
 		console.log(
 			"right",
 			!rightCourse,
 			!note,
 			!student,
-			student?.school,
-			note?.course.school,
-			student?.school === note?.course.school,
-			typeof student?.school,
-			typeof note?.course.school
+			student?.school.toString(),
+			note?.course.school.toString(),
+			student?.school.toString() === note?.course.school.toString(),
+			typeof student?.school.toString(),
+			typeof note?.course.school.toString()
 		);
 		if (!student || !note || !rightCourse) {
 			console.log("return");
