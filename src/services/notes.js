@@ -54,7 +54,7 @@ export const getAttachment = async (req, res) => {
 		);
 		console.log("cau", cloudAttachmentUrl, cloudAttachmentUrl.url);
 		const data = await axios.get(cloudAttachmentUrl.url);
-		console.log("data", data);
+		console.log("data", typeof data);
 		res.send(data);
 	} catch (err) {
 		console.log(err);
