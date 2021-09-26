@@ -175,7 +175,7 @@ export default {
 
 					const mime_type = isPdf ? "pdf" : "video";
 					// to be changed
-					const serverUrl = "https://ednotes-api.herokuapp.com";
+					const serverUrl = "http://ednotes-api.herokuapp.com";
 					const id = new mongoose.Types.ObjectId();
 
 					const uploadData = await processUpload(file);

@@ -9,6 +9,7 @@ export const getAttachment = async (req, res) => {
 		console.log("enter get");
 		const { userId } = req.app.locals.authenticated;
 		// const param = req.params;
+		console.log("the pprotocol", req.protocol);
 		const proxy_url = url.format({
 			protocol: req.protocol,
 			host: req.get("host"),
@@ -19,13 +20,21 @@ export const getAttachment = async (req, res) => {
 		console.log("student", student);
 		const note = await LectureNote.findOne({
 			noteAttachments: { $elemMatch: { proxy_url } },
-		});
-		// .populate("course");
+		}).populate("course");
+		// const tets =	{
+		// 		noteAttachments: {
+		// 			$elemMatch: {
+		// 				url: "https://res.cloudinary.com/drd/video/authenticated/s--T6QILcH8--/v1632658161/x53o2bpsraefneu6oetr.mp4";
+		// 			}
+		// 		}
+		// 	}
 
 		console.log("note", note);
 
 		// change to sub check later by using level
 		const rightCourse =
+			student?.school === note?.course.school &&
+			student?.faculty === note?.course.faculty &&
 			student?.dept === note?.course.dept &&
 			student?.level === note?.course.level;
 		console.log(
