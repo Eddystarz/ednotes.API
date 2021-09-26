@@ -55,6 +55,10 @@ export const getAttachment = async (req, res) => {
 		console.log("cau", cloudAttachmentUrl, cloudAttachmentUrl.url);
 		const data = await axios.get(cloudAttachmentUrl.url);
 		console.log("data", typeof data);
+		res.set({
+			"Content-Type": "video/mp4;codecs=avc1",
+			"Content-Length": "1570024",
+		});
 		res.send(data);
 	} catch (err) {
 		console.log(err);
