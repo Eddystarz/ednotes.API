@@ -42,7 +42,11 @@ export const getAttachment = async (req, res) => {
 			!rightCourse,
 			!note,
 			!student,
-			!student && !rightCourse
+			student?.school,
+			note?.course.school,
+			student?.school === note?.course.school,
+			typeof student?.school,
+			typeof note?.course.school
 		);
 		if (!student || !note || !rightCourse) {
 			console.log("return");
