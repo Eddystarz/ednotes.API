@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// create a routes folder later
+// create a routes folder later - refferal
 app.get("/notes/:note/:att", isAuthenticated, getAttachment);
 
 graphQlServer(app, PORT).catch((err) => console.log(err));

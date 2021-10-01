@@ -1,13 +1,16 @@
 import { ApolloError } from "apollo-server-express";
 import jwt from "jsonwebtoken";
 import { combineResolvers } from "graphql-resolvers";
+
 // import dayjs from "dayjs";
 
 import config from "../helper/config";
 
 // ========== Models ==============//
 import User from "../database/Models/user";
+import Student from "../database/Models/student";
 import Otp from "../database/Models/otp";
+import BlacklistedToken from "../database/Models/blacklisted_token";
 
 // ============= Services ===============//
 import { isAuthenticated, isAdmin, isUser, isSuperAdmin } from "./middleware";
@@ -218,6 +221,28 @@ export default {
 				throw error;
 			}
 		},
+
+		logout: combineResolvers(
+			isAuthenticated,
+			async (_, __, { Id, exp, token }) => {
+				try {
+					const newBlt = new BlacklistedToken({
+						user: Id,
+						expiredAt: new Date(Number(exp) * 1000),
+						token,
+					});
+
+					await newBlt.save();
+					return {
+						message: "User logged out successfully!",
+						value: false,
+					};
+				} catch (error) {
+					console.log(error);
+					throw error;
+				}
+			}
+		),
 
 		// @TODO: This can be a Rest API Endpoint Instead
 		// confirmEmail: async (_, { token }) => {
@@ -472,7 +497,7 @@ export default {
 						value: false,
 					};
 
-				await User.deleteOne({ user: userToBeRemoved._id });
+				await Student.deleteOne({ user: userToBeRemoved._id });
 				await userToBeRemoved.remove();
 
 				return {

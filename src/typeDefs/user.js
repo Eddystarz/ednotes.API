@@ -31,6 +31,8 @@ export default gql`
 		"""
 		login(input: loginInput!): UserStatus
 
+		logout: GeneralStatus
+
 		confirmEmail(code: String!, email: String!): GeneralStatus!
 		resendCode(email: String!): GeneralStatus!
 

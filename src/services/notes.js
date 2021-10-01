@@ -57,12 +57,6 @@ export const getAttachment = async (req, res) => {
 			responseType: "stream",
 		});
 		response.data.pipe(res);
-		// console.log("data", typeof data);
-		// res.set({
-		// 	"Content-Type": "video/mp4;codecs=avc1",
-		// 	"Content-Length": "1570024",
-		// });
-		// res.send(data);
 	} catch (err) {
 		console.log(err);
 		// throw err;
