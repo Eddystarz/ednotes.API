@@ -60,11 +60,7 @@ export default {
 					new: true,
 				});
 
-				return {
-					message: "Dept updated successfully",
-					value: true,
-					data: updatedDept,
-				};
+				return updatedDept;
 			} catch (error) {
 				throw error;
 			}

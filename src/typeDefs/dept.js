@@ -8,6 +8,13 @@ export default gql`
 
 	extend type Mutation {
 		createDept(input: deptInput): Dept
+		updateDept(
+			school: ID
+			name: String
+			faculty: ID
+			description: String
+			pay_per_semester: Int
+		): Dept
 	}
 
 	input deptInput {
@@ -15,6 +22,7 @@ export default gql`
 		name: String!
 		faculty: ID!
 		description: String!
+		pay_per_semester: Int!
 	}
 
 	type Dept {
@@ -24,6 +32,12 @@ export default gql`
 		name: String!
 		description: String!
 		pay_per_semester: Int!
+	}
+
+	type DeptStatus {
+		message: String!
+		value: Boolean!
+		dept: Dept!
 	}
 
 	extend type Subscription {

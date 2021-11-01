@@ -29,4 +29,15 @@ export default gql`
 		"""
 		date_uploaded: Date
 	}
+	type Transaction {
+		_id: ID
+		amount: Int!
+		type: String!
+		balance_after_transaction: Int!
+		status: String!
+		currency: String!
+		description: String
+		createdAt: Date!
+		updatedAt: Date!
+	}
 `;

@@ -7,7 +7,7 @@ export default gql`
 		"""
 		get_single_course(courseId: ID!): DataStatus
 		get_all_courses(cursor: String, limit: Int): CourseConnection
-		get_student_semester_courses: SemesterCourses
+		get_student_semester_courses: [SemesterCourse]
 		get_semester_courses(
 			cursor: String
 			limit: Int
@@ -43,6 +43,13 @@ export default gql`
 		"At no point is the deleted news data returned in this request
 		"""
 		deleteCourse(courseId: ID!): DataStatus
+		buySemesterCourse(
+			school: ID!
+			faculty: ID!
+			dept: ID!
+			level: ID!
+			semester: Int!
+		): SemesterCourseStatus
 	}
 
 	type Course {
@@ -65,12 +72,18 @@ export default gql`
 		courseTopics: [Topic]
 	}
 
-	type SemesterCourses {
+	type SemesterCourse {
 		_id: ID!
 		school: School
 		faculty: Faculty
 		dept: Dept
+		level: Level
 		semester: Int
+	}
+	type SemesterCourseStatus {
+		message: String!
+		value: Boolean!
+		transaction: Transaction
 	}
 
 	type CourseConnection {
