@@ -1,5 +1,6 @@
 import { ApolloError } from "apollo-server-express";
 import jwt from "jsonwebtoken";
+
 import { combineResolvers } from "graphql-resolvers";
 
 // import dayjs from "dayjs";
@@ -11,13 +12,14 @@ import User from "../database/Models/user";
 import Student from "../database/Models/student";
 import Otp from "../database/Models/otp";
 import BlacklistedToken from "../database/Models/blacklisted_token";
+import Wallet from "../database/Models/wallet";
 
 // ============= Services ===============//
 import { isAuthenticated, isAdmin, isUser, isSuperAdmin } from "./middleware";
 import { pubsub } from "../subscription";
 import UserTopics from "../subscription/events/user";
 import { htmlToSend, sendMail } from "../services/email_service";
-
+import Transaction from "../database/Models/transaction";
 const { JWT_SECRET_KEY } = config;
 export default {
 	Query: {
@@ -94,14 +96,16 @@ export default {
 					text,
 					htmlToSend(newUser.firstName, newOtp.value)
 				);
-				const result = await newUser.save();
+				const savedUser = await newUser.save();
+
+				await Wallet.create({ user: newUser._id });
 
 				// console.log("not supposed to run");
 
 				return {
 					message: "Account created successfully, check your email for code",
 					value: true,
-					user: result,
+					user: savedUser,
 				};
 			} catch (error) {
 				throw error;
@@ -235,7 +239,7 @@ export default {
 					await newBlt.save();
 					return {
 						message: "User logged out successfully!",
-						value: false,
+						value: true,
 					};
 				} catch (error) {
 					console.log(error);
@@ -497,12 +501,14 @@ export default {
 						value: false,
 					};
 
-				await Student.deleteOne({ user: userToBeRemoved._id });
+				await Student.deleteOne({ user: userToBeRemoved });
+				await Wallet.deleteOne({ user: userToBeRemoved });
+				await Transaction.deleteMany({ user: userToBeRemoved });
 				await userToBeRemoved.remove();
 
 				return {
 					message: "User data removed successfully !",
-					value: false,
+					value: true,
 				};
 			} catch (error) {
 				throw error;

@@ -7,7 +7,12 @@ export default gql`
 		"""
 		get_single_course(courseId: ID!): DataStatus
 		get_all_courses(cursor: String, limit: Int): CourseConnection
-		get_user_courses(cursor: String, limit: Int): CourseConnection
+		get_student_semester_courses: SemesterCourses
+		get_semester_courses(
+			cursor: String
+			limit: Int
+			clusterId: String
+		): CourseConnection
 	}
 
 	extend type Mutation {
@@ -58,6 +63,14 @@ export default gql`
 		semester: String
 
 		courseTopics: [Topic]
+	}
+
+	type SemesterCourses {
+		_id: ID!
+		school: School
+		faculty: Faculty
+		dept: Dept
+		semester: Int
 	}
 
 	type CourseConnection {

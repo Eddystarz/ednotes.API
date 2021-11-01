@@ -1,6 +1,8 @@
 import { ApolloError } from "apollo-server-express";
 import { combineResolvers } from "graphql-resolvers";
 import jwt from "jsonwebtoken";
+import dayjs from "dayjs";
+import { agenda } from "../services/agenda";
 
 // ========== Models ==============//
 import User from "../database/Models/user";
@@ -9,6 +11,7 @@ import Faculty from "../database/Models/faculty";
 import Dept from "../database/Models/department";
 import Level from "../database/Models/level";
 import Student from "../database/Models/student";
+import TrialCourse from "../database/Models/trial_course";
 
 // ============= Services ===============//
 import { isAdmin, isStudent } from "./middleware";
@@ -68,11 +71,20 @@ export default {
 					faculty: input.faculty,
 					dept: input.dept,
 					level: input.level,
+					semester: input.semester,
 				});
 
 				const result_student = await (await newStudent.save())
 					.populate("user")
 					.execPopulate();
+
+				await TrialCourse.create({ student: newStudent._id, ...newStudent });
+
+				const day = dayjs(newStudent.createdAt).add(7, "d").format();
+				// console.log("the added day", day);
+				agenda.schedule(day, "end trial", {
+					id: newStudent._id,
+				});
 				const user = await User.findByIdAndUpdate(
 					Id,
 					{ userType: "student" },
@@ -89,6 +101,7 @@ export default {
 						expiresIn: "30d",
 					}
 				);
+
 				// add the previous token to blacklisted db here
 				return {
 					message: "Profile created successfully",

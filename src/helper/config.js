@@ -13,6 +13,7 @@ const {
 	MG_API_KEY,
 	MG_DOMAIN,
 	TOTP_KEY,
+	PAYSTACK_API_SECRET,
 } = process.env;
 
 export default {
@@ -26,4 +27,5 @@ export default {
 	MG_API_KEY,
 	MG_DOMAIN,
 	TOTP_KEY,
+	PAYSTACK_API_SECRET,
 };

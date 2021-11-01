@@ -19,6 +19,7 @@ export default gql`
 			faculty: ID
 			dept: ID
 			level: ID
+			semester: Int
 		): StudentStatus
 	}
 
@@ -28,6 +29,7 @@ export default gql`
 		faculty: ID
 		dept: ID
 		level: ID
+		semester: Int
 	}
 
 	input editStudentInput {
@@ -51,6 +53,8 @@ export default gql`
 		faculty: Faculty!
 		dept: Dept!
 		level: Level!
+		semester: Int!
+		onTrial: Boolean!
 		createdAt: Date!
 		updatedAt: Date!
 	}

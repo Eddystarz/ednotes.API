@@ -25,6 +25,14 @@ const studentSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: "Level",
 		},
+		semester: {
+			type: Number,
+			enum: [1, 2],
+		},
+		onTrial: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	{ timestamps: true }
 );

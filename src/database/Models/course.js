@@ -33,8 +33,8 @@ const courseSchema = new Schema({
 		required: true,
 	},
 	semester: {
-		type: String,
-		enum: ["first", "second"],
+		type: Number,
+		enum: [1, 2],
 	},
 });
 
