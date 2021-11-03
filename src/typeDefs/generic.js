@@ -31,13 +31,13 @@ export default gql`
 	}
 	type Transaction {
 		_id: ID
-		amount: Int!
+		amount: Float!
 		type: String!
-		balance_after_transaction: Int!
+		balance_after_transaction: Float!
 		status: String!
 		currency: String!
 		description: String
-		createdAt: Date!
+		date: Date!
 		updatedAt: Date!
 	}
 `;

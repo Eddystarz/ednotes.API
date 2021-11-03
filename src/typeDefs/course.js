@@ -7,7 +7,7 @@ export default gql`
 		"""
 		get_single_course(courseId: ID!): DataStatus
 		get_all_courses(cursor: String, limit: Int): CourseConnection
-		get_student_semester_courses: [SemesterCourse]
+		get_student_semester_courses: SemesterCourseStatus
 		get_semester_courses(
 			cursor: String
 			limit: Int
@@ -84,6 +84,7 @@ export default gql`
 		message: String!
 		value: Boolean!
 		transaction: Transaction
+		semesterCourses: [SemesterCourse]
 	}
 
 	type CourseConnection {

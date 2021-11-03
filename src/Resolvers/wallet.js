@@ -9,7 +9,7 @@ import paystack from "../services/paystack";
 
 export default {
 	Query: {
-		get_wallet: combineResolvers(isAuthenticated, async (_, __, { Id }) => {
+		wallet: combineResolvers(isAuthenticated, async (_, __, { Id }) => {
 			try {
 				const wallet = await Wallet.findOne({ user: Id });
 				if (!wallet)
@@ -33,7 +33,10 @@ export default {
 			isAuthenticated,
 			async (_, { amount }, { Id }) => {
 				try {
-					const wallet = await Wallet.findOne({ user: Id }).populate("user");
+					console.log("in fund");
+					const wallet = await Wallet.findOne({ user: Id })
+						.populate("user")
+						.exec();
 					if (!wallet)
 						return {
 							message: "No wallet is associated with this user",

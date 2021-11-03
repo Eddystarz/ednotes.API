@@ -32,7 +32,12 @@ export default {
 					if (student.onTrial) {
 						const trialCourse = await TrialCourse.find({
 							student: student._id,
-						});
+						})
+							.populate("school")
+							.populate("faculty")
+							.populate("dept")
+							.populate("level")
+							.exec();
 						if (!trialCourse.length)
 							return {
 								message: "No trial courses available. Try buying courses.",
@@ -45,7 +50,12 @@ export default {
 							semesterCourses: trialCourse,
 						};
 					}
-					const boughtCourses = await BoughtCourse.find({ student });
+					const boughtCourses = await BoughtCourse.find({ student })
+						.populate("school")
+						.populate("faculty")
+						.populate("dept")
+						.populate("level")
+						.exec();
 					if (!boughtCourses.length)
 						return {
 							message: "No semester courses available. Try buying courses.",
@@ -77,6 +87,7 @@ export default {
 
 					if (student.onTrial && !clusterId) {
 						const trialCourse = await TrialCourse.findOne({ student });
+
 						if (!trialCourse)
 							return {
 								message: "No trial courses found for this student !",
@@ -140,7 +151,7 @@ export default {
 						courses = await Course.find(where)
 							.limit(limit + 1)
 							.sort({ createdAt: -1 });
-
+						console.log("the courses", courses, where);
 						if (courses.length === 0) {
 							return {
 								edges: courses,
@@ -311,7 +322,7 @@ export default {
 						};
 					const existedCourse = await BoughtCourse.findOne({
 						user: Id,
-						student: student.__v,
+						student: student.id,
 						school,
 						faculty,
 						dept,
@@ -326,7 +337,7 @@ export default {
 						};
 					const wallet = await Wallet.findOne({ user: Id });
 					const CourseTransaction = new Transact(wallet);
-					const transaction = CourseTransaction.debit(
+					const transaction = await CourseTransaction.debit(
 						courseDept.pay_per_semester,
 						"paid for course"
 					);
@@ -335,6 +346,8 @@ export default {
 							message: "Insufficient balance, Top up your wallet to continue !",
 							value: false,
 						};
+
+					console.log("transaction is", transaction);
 					const boughtCourse = await BoughtCourse.create({
 						user: Id,
 						student,

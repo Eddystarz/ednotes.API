@@ -27,7 +27,7 @@ const initializeTransaction = async (wallet, amount) => {
 				amount: Number(amount) * 100,
 				currency: wallet.currency,
 				reference: transaction._id,
-				channels: [["card", "bank", "ussd", "bank_transfer"]],
+				channels: ["card", "bank", "ussd", "bank_transfer"],
 			},
 			axiosConfig
 		);

@@ -10,7 +10,8 @@ class Transact {
 
 	async debit(amount, description) {
 		if (!this.sufficientBalance(amount)) return false;
-		this.wallet.account_balance -= amount;
+		const newBalance = this.wallet.account_balance - amount;
+		this.wallet.account_balance = newBalance.toFixed(2);
 		await this.wallet.save();
 		const { user, _id, account_balance } = this.wallet;
 		const transaction = await Transaction.create({

@@ -34,7 +34,7 @@ const graphQlServer = async (app, PORT) => {
 				const user = await verifyUser(header);
 				const token = header.split(" ")[1];
 				const foundToken = await BlacklistedToken.findOne({ token });
-				console.log("the token decrypt", user);
+				// console.log("the token decrypt", user);
 				if (!user || foundToken) {
 					return {
 						logged_in_user: false,

@@ -3,49 +3,24 @@ import { gql } from "apollo-server-express";
 export default gql`
 	extend type Query {
 		"""
-		Fetch logged in students profile
+		Fetch logged in user wallet
 		"""
-		student: Student
-
-		students: [Student]
+		wallet: WalletStatus
 	}
 
 	extend type Mutation {
-		createStudentProfile(input: studentProfileInput): StudentStatus
-
-		updateStudentProfile(
-			state: String
-			school: ID
-			faculty: ID
-			dept: ID
-			level: ID
-			semester: Int
-		): StudentStatus
-	}
-
-	input studentProfileInput {
-		state: String
-		school: ID
-		faculty: ID
-		dept: ID
-		level: ID
-		semester: Int
-	}
-
-	input editStudentInput {
-		firstName: String
-		lastName: String
-		email: String
+		fundWallet(amount: Int): WalletStatus
 	}
 
 	type WalletStatus {
 		message: String!
 		value: Boolean!
 		wallet: Wallet
+		authorization_url: String
 	}
 
 	type Wallet {
-		account_balance: Int!
+		account_balance: Float!
 		currency: String!
 		updatedAt: Date!
 	}

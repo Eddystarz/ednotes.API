@@ -78,7 +78,16 @@ export default {
 					.populate("user")
 					.execPopulate();
 
-				await TrialCourse.create({ student: newStudent._id, ...newStudent });
+				await TrialCourse.create({
+					student: newStudent._id,
+					user: Id,
+					state: input.state,
+					school: input.school,
+					faculty: input.faculty,
+					dept: input.dept,
+					level: input.level,
+					semester: input.semester,
+				});
 
 				const day = dayjs(newStudent.createdAt).add(7, "d").format();
 				// console.log("the added day", day);

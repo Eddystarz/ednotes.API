@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // proxy endpoint to fetch notes for protection
 app.get("/notes/:note/:att", isAuthenticated, getAttachment);
-app.get("/wh/paystack", isAuthenticated, getPaystackEvent);
+app.post("/wh/paystack", getPaystackEvent);
 
 graphQlServer(app, PORT).catch((err) => console.log(err));
 
