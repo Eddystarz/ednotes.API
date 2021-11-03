@@ -7,6 +7,8 @@ const { PAYSTACK_API_SECRET } = config;
 export const getPaystackEvent = async (req, res) => {
 	try {
 		console.log("from web hook");
+		console.log("event first", req.body);
+		console.log("the secret", PAYSTACK_API_SECRET);
 
 		const hash = crypto
 			.createHmac("sha512", PAYSTACK_API_SECRET)
