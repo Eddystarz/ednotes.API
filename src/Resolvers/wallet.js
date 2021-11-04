@@ -17,12 +17,8 @@ export default {
 						message: "Wallet fetched unsuccessfully !",
 						value: false,
 					};
-				// console.log("wallet", wallet);
-				// console.log(
-				// 	"wall ac",
-				// 	parseFloat(wallet.account_balance),
-				// 	parseFloat(wallet.account_balance)
-				// );
+				// console.log("acb", wallet.get("account_balance"));
+				// wallet.get('account_balance', null, { getters: false });
 
 				return {
 					message: "Wallet fetched successfully !",

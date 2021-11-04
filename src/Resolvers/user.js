@@ -20,6 +20,8 @@ import { pubsub } from "../subscription";
 import UserTopics from "../subscription/events/user";
 import { htmlToSend, sendMail } from "../services/email_service";
 import Transaction from "../database/Models/transaction";
+import TrialCourse from "../database/Models/trial_course";
+import BoughtCourse from "../database/Models/bought_course";
 const { JWT_SECRET_KEY } = config;
 export default {
 	Query: {
@@ -73,7 +75,7 @@ export default {
 					...input,
 				});
 
-				console.log("newUser", newUser, "newUser", newUser);
+				// console.log("newUser", newUser, "newUser", newUser);
 
 				pubsub.publish(UserTopics.USER_CREATED, {
 					[UserTopics.USER_CREATED]: newUser,
@@ -97,8 +99,6 @@ export default {
 					htmlToSend(newUser.firstName, newOtp.value)
 				);
 				const savedUser = await newUser.save();
-
-				await Wallet.create({ user: newUser._id });
 
 				// console.log("not supposed to run");
 
@@ -289,6 +289,7 @@ export default {
 					};
 				user.isVerified = true;
 				await user.save();
+				await Wallet.create({ user });
 				// const currentDate = dayjs(Date());
 				// const expiredDate = dayjs(matchedOtp.expiredAt);
 				// const diff = expiredDate.diff(currentDate);
@@ -504,6 +505,8 @@ export default {
 				await Student.deleteOne({ user: userToBeRemoved });
 				await Wallet.deleteOne({ user: userToBeRemoved });
 				await Transaction.deleteMany({ user: userToBeRemoved });
+				await TrialCourse.deleteMany({ user: userToBeRemoved });
+				await BoughtCourse.deleteMany({ user: userToBeRemoved });
 				await userToBeRemoved.remove();
 
 				return {

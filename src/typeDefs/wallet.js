@@ -20,7 +20,7 @@ export default gql`
 	}
 
 	type Wallet {
-		account_balance: String
+		account_balance: String!
 		currency: String
 		updatedAt: Date
 	}

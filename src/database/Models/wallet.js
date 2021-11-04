@@ -15,11 +15,11 @@ const decodeAndConvert = (encodedBalance) => {
 	let amount = 0;
 	jwt.verify(encodedBalance, JWT_SECRET_KEY, (err, decoded) => {
 		if (!err) {
-			amount = decoded.account_balance;
+			amount = Number(decoded.account_balance);
 		}
-		amount /= 100;
-		return amount.toFixed(2);
 	});
+	amount /= 100;
+	return amount.toFixed(2);
 };
 
 const walletSchema = new Schema(

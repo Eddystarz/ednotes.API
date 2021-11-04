@@ -25,17 +25,22 @@ export const getPaystackEvent = async (req, res) => {
 			if (event.event === "charge.success") {
 				const eventAmount = Number(event.data.amount) / 100;
 				const transaction = await Transaction.findById(event.data.reference);
-				const wallet = await Wallet.findByIdAndUpdate(
-					transaction.wallet,
-					{
-						$inc: {
-							account_balance: eventAmount,
-						},
-					},
-					{ new: true }
+				const wallet = await Wallet.findById(
+					transaction.wallet
+					// {
+					// 	$inc: {
+					// 		account_balance: eventAmount,
+					// 	},
+					// },
+					// { new: true }
 				);
+				const currentBalance = wallet.get("account_balance");
+				const balance = currentBalance + eventAmount;
+				wallet.account_balance = balance;
+				await wallet.save();
+
 				transaction.status = "success";
-				transaction.balance_after_transaction = wallet.account_balance;
+				transaction.balance_after_transaction = balance;
 				await transaction.save();
 			} else {
 				console.log("not a charge.success");
