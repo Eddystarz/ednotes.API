@@ -23,7 +23,7 @@ export const getPaystackEvent = async (req, res) => {
 			// Do something with event
 			console.log("from paystack web hook", event);
 			if (event.event === "charge.success") {
-				const eventAmount = (Number(event.data.amount) / 100).toFixed(2);
+				const eventAmount = Number(event.data.amount) / 100;
 				const transaction = await Transaction.findById(event.data.reference);
 				const wallet = await Wallet.findByIdAndUpdate(
 					transaction.wallet,

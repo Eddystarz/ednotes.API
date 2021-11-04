@@ -13,7 +13,7 @@ const transactionSchema = new Schema(
 			required: true,
 		},
 		amount: {
-			type: Number,
+			type: String,
 			required: true,
 		},
 		type: {
@@ -28,7 +28,7 @@ const transactionSchema = new Schema(
 			required: true,
 		},
 		balance_after_transaction: {
-			type: Number,
+			type: String,
 			required: true,
 		},
 		description: {
@@ -39,12 +39,16 @@ const transactionSchema = new Schema(
 	{ timestamps: { createdAt: "date" } }
 );
 
-transactionSchema.set("toJSON", {
-	transform: (document, returnedObject) => {
-		// returnedObject.id = returnedObject._id.toString()
-		delete returnedObject.user;
-		delete returnedObject.wallet;
-	},
-});
+// transactionSchema.set("toJSON", {
+// 	transform: (document, returnedObject) => {
+// 		// returnedObject.id = returnedObject._id.toString()
+// 		returnedObject.amount = parseFloat(returnedObject.amount);
+// 		returnedObject.balance_after_transaction = parseFloat(
+// 			returnedObject.balance_after_transaction
+// 		);
+// 		delete returnedObject.user;
+// 		delete returnedObject.wallet;
+// 	},
+// });
 
 export default mongoose.model("Transaction", transactionSchema);

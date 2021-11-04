@@ -17,6 +17,13 @@ export default {
 						message: "Wallet fetched unsuccessfully !",
 						value: false,
 					};
+				// console.log("wallet", wallet);
+				// console.log(
+				// 	"wall ac",
+				// 	parseFloat(wallet.account_balance),
+				// 	parseFloat(wallet.account_balance)
+				// );
+
 				return {
 					message: "Wallet fetched successfully !",
 					value: true,

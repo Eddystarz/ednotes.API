@@ -12,7 +12,6 @@ const axiosConfig = {
 
 const initializeTransaction = async (wallet, amount) => {
 	try {
-		amount = Number(amount).toFixed(2);
 		const transaction = await Transaction.create({
 			user: wallet.user,
 			wallet,

@@ -20,8 +20,8 @@ export default gql`
 	}
 
 	type Wallet {
-		account_balance: Float!
-		currency: String!
-		updatedAt: Date!
+		account_balance: String
+		currency: String
+		updatedAt: Date
 	}
 `;

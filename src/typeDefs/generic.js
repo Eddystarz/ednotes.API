@@ -31,11 +31,10 @@ export default gql`
 	}
 	type Transaction {
 		_id: ID
-		amount: Float!
+		amount: String
 		type: String!
-		balance_after_transaction: Float!
+		balance_after_transaction: String
 		status: String!
-		currency: String!
 		description: String
 		date: Date!
 		updatedAt: Date!
