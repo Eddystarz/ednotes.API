@@ -34,13 +34,14 @@ export const getPaystackEvent = async (req, res) => {
 					// },
 					// { new: true }
 				);
-				const currentBalance = wallet.get("account_balance");
+				const currentBalance = Number(wallet.get("account_balance"));
 				const balance = currentBalance + eventAmount;
-				wallet.account_balance = balance;
+				wallet.set({ account_balance: balance });
 				await wallet.save();
 
 				transaction.status = "success";
 				transaction.balance_after_transaction = balance;
+				transaction.date = event.data.paid_at;
 				await transaction.save();
 			} else {
 				console.log("not a charge.success");
