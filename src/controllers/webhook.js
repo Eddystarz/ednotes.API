@@ -36,6 +36,7 @@ export const getPaystackEvent = async (req, res) => {
 				);
 				const currentBalance = Number(wallet.get("account_balance"));
 				const balance = currentBalance + eventAmount;
+				console.log("top", currentBalance, eventAmount, balance);
 				wallet.set({ account_balance: balance });
 				await wallet.save();
 
