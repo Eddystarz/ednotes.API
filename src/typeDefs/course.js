@@ -83,7 +83,6 @@ export default gql`
 	type SemesterCourseStatus {
 		message: String!
 		value: Boolean!
-		transaction: Transaction
 		semesterCourses: [SemesterCourse]
 	}
 
