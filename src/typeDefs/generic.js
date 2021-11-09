@@ -34,7 +34,6 @@ export default gql`
 		amount: String
 		type: String!
 		balance_after_transaction: String
-		status: String!
 		description: String
 		date: Date!
 		updatedAt: Date!

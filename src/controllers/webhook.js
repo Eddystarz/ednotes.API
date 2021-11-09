@@ -41,8 +41,9 @@ export const getPaystackEvent = async (req, res) => {
 				await wallet.save();
 
 				transaction.status = "success";
-				transaction.balance_after_transaction = balance;
+				transaction.balance_after_transaction = balance.toFixed(2);
 				transaction.date = event.data.paid_at;
+				transaction.description = "Wallet funded";
 				await transaction.save();
 			} else {
 				console.log("not a charge.success");

@@ -49,7 +49,7 @@ export default gql`
 			dept: ID!
 			level: ID!
 			semester: Int!
-		): SemesterCourseStatus
+		): TransactionStatus
 	}
 
 	type Course {
@@ -85,6 +85,12 @@ export default gql`
 		value: Boolean!
 		transaction: Transaction
 		semesterCourses: [SemesterCourse]
+	}
+
+	type TransactionStatus {
+		message: String!
+		value: Boolean!
+		transaction: Transaction
 	}
 
 	type CourseConnection {

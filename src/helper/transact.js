@@ -4,23 +4,32 @@ class Transact {
 		this.wallet = wallet;
 	}
 
+	currentWalletBalance() {
+		return Number(this.wallet.get("account_balance"));
+	}
+
+	async setWalletBalance(amount) {
+		this.wallet.set({ account_balance: amount });
+		await this.wallet.save();
+	}
+
 	sufficientBalance(amount) {
-		return this.wallet.account_balance > amount;
+		return this.currentWalletBalance() > amount;
 	}
 
 	async debit(amount, description) {
 		if (!this.sufficientBalance(amount)) return false;
-		const newBalance = this.wallet.account_balance - amount;
-		this.wallet.account_balance = newBalance;
-		await this.wallet.save();
-		const { user, _id, account_balance } = this.wallet;
+		const newBalance = this.currentWalletBalance() - amount;
+		await this.setWalletBalance(newBalance);
+
+		const { user, _id } = this.wallet;
 		const transaction = await Transaction.create({
 			user,
 			wallet: _id,
 			type: "debit",
 			status: "success",
-			amount: amount.toFixed(2),
-			balance_after_transaction: account_balance,
+			amount,
+			balance_after_transaction: newBalance.toFixed(2),
 			description,
 		});
 		// can make a shallow copy later if seceret is unhidden when to Json

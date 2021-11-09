@@ -25,9 +25,10 @@ export default {
 				try {
 					const student = await Student.findOne({ user: Id });
 					if (!student) {
-						throw new ApolloError(
-							"No courses here. You are yet to set your profile or haven't bought course !"
-						);
+						return {
+							message: "No courses here. You are yet to set your profile!",
+							value: false,
+						};
 					}
 					if (student.onTrial) {
 						const trialCourse = await TrialCourse.find({
@@ -43,6 +44,7 @@ export default {
 								message: "No trial courses available. Try buying courses.",
 								value: false,
 							};
+						delete trialCourse._id;
 
 						return {
 							message: "Trial courses fetched successfully !",
@@ -77,22 +79,29 @@ export default {
 				try {
 					let courses;
 					let where;
+					if (limit === undefined) {
+						limit = 1;
+					} else if (limit === 0) {
+						throw new ApolloError("Specify a valid limit");
+					}
 					const student = await Student.findOne({ user: Id });
 
-					if (!student)
-						return {
-							message: "No courses here. You are yet to set your profile !",
-							value: false,
-						};
+					if (!student) {
+						console.log("no student");
+						throw new ApolloError(
+							"No courses here. You are yet to set your profile !"
+						);
+					}
 
 					if (student.onTrial && !clusterId) {
 						const trialCourse = await TrialCourse.findOne({ student });
 
-						if (!trialCourse)
-							return {
-								message: "No trial courses found for this student !",
-								value: false,
-							};
+						if (!trialCourse) {
+							console.log("not on trial");
+							throw new ApolloError(
+								"No trial courses found for this student !"
+							);
+						}
 
 						where = {
 							school: trialCourse.school,
@@ -101,18 +110,22 @@ export default {
 							level: trialCourse.level,
 							semester: trialCourse.semester,
 						};
+						if (cursor) {
+							where.createdAt = { $lt: cursor };
+						}
 					}
 
 					if (clusterId) {
+						console.log("cluster runs");
 						const boughtCourse = await BoughtCourse.findOne({
 							_id: clusterId,
 							student,
 						});
-						if (!boughtCourse)
-							return {
-								message: "You are not authorized to access this resources !",
-								value: false,
-							};
+						if (!boughtCourse) {
+							throw new ApolloError(
+								"You are not authorized to access this resources !"
+							);
+						}
 
 						where = {
 							school: boughtCourse.school,
@@ -121,53 +134,39 @@ export default {
 							level: boughtCourse.level,
 							semester: boughtCourse.semester,
 						};
+						if (cursor) {
+							where.createdAt = { $lt: cursor };
+						}
 					}
 
-					if (cursor) {
-						courses = await Course.find({
-							...where,
-							createdAt: { $lt: cursor },
-						})
-							.limit(limit + 1)
-							.sort({ createdAt: -1 });
+					if (where === undefined) {
+						throw new ApolloError("No trial or bought courses");
+					}
+					console.log("final where", where);
 
-						if (courses.length === 0) {
-							return {
-								edges: courses,
-							};
-						} else if (courses.length > 0) {
-							const hasNextPage = courses.length > limit;
-							const edges = hasNextPage ? courses.slice(0, -1) : courses;
+					// eslint-disable-next-line prefer-const
+					courses = await Course.find({
+						...where,
+					})
+						.limit(limit + 1)
+						.sort({ createdAt: -1 });
+					console.log("not get mal", courses.length, limit);
 
-							return {
-								edges,
-								pageInfo: {
-									hasNextPage,
-									endCursor: edges[edges.length - 1].createdAt,
-								},
-							};
-						}
-					} else {
-						courses = await Course.find(where)
-							.limit(limit + 1)
-							.sort({ createdAt: -1 });
-						console.log("the courses", courses, where);
-						if (courses.length === 0) {
-							return {
-								edges: courses,
-							};
-						} else if (courses.length > 0) {
-							const hasNextPage = courses.length > limit;
-							const edges = hasNextPage ? courses.slice(0, -1) : courses;
+					if (courses.length === 0) {
+						return {
+							edges: courses,
+						};
+					} else if (courses.length > 0) {
+						const hasNextPage = courses.length > limit;
+						const edges = hasNextPage ? courses.slice(0, -1) : courses;
 
-							return {
-								edges,
-								pageInfo: {
-									hasNextPage,
-									endCursor: edges[edges.length - 1].createdAt,
-								},
-							};
-						}
+						return {
+							edges,
+							pageInfo: {
+								hasNextPage,
+								endCursor: edges[edges.length - 1]?.createdAt,
+							},
+						};
 					}
 					throw new ApolloError(
 						"Something went wrong while trying to fetch courses"

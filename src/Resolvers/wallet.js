@@ -1,7 +1,9 @@
 import { combineResolvers } from "graphql-resolvers";
+import { ApolloError } from "apollo-server-express";
 
 // ========== Models ==============//
 import Wallet from "../database/Models/wallet";
+import Transaction from "../database/Models/transaction";
 
 // ============= Services ===============//
 import { isAuthenticated } from "./middleware";
@@ -29,6 +31,59 @@ export default {
 				throw error;
 			}
 		}),
+		get_wallet_transactions: combineResolvers(
+			isAuthenticated,
+			async (_, { cursor, limit }, { Id }) => {
+				try {
+					if (limit === undefined) {
+						limit = 1;
+					} else if (limit === 0) {
+						throw new ApolloError("Specify a valid limit");
+					}
+					const wallet = await Wallet.findOne({ user: Id });
+					if (!wallet)
+						return {
+							message: "No associated wallet !",
+							value: false,
+						};
+					const where = {
+						wallet,
+						status: "success",
+					};
+
+					if (cursor) {
+						where.date = { $lt: cursor };
+					}
+
+					const transactions = await Transaction.find(where)
+						.limit(limit + 1)
+						.sort({ date: -1 });
+					if (transactions.length === 0) {
+						return {
+							edges: transactions,
+						};
+					} else if (transactions.length > 0) {
+						const hasNextPage = transactions.length > limit;
+						const edges = hasNextPage
+							? transactions.slice(0, -1)
+							: transactions;
+
+						return {
+							edges,
+							pageInfo: {
+								hasNextPage,
+								endCursor: edges[edges.length - 1]?.date,
+							},
+						};
+					}
+					throw new ApolloError(
+						"Something went wrong while trying to fetch transactions"
+					);
+				} catch (error) {
+					throw error;
+				}
+			}
+		),
 	},
 
 	Mutation: {

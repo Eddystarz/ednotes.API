@@ -6,6 +6,7 @@ export default gql`
 		Fetch logged in user wallet
 		"""
 		wallet: WalletStatus
+		get_wallet_transactions(cursor: String, limit: Int): TransactionConnection
 	}
 
 	extend type Mutation {
@@ -23,5 +24,10 @@ export default gql`
 		account_balance: String!
 		currency: String
 		updatedAt: Date
+	}
+
+	type TransactionConnection {
+		edges: [Transaction]
+		pageInfo: PageInfo
 	}
 `;
