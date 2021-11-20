@@ -74,6 +74,7 @@ export default {
 					userType: "user",
 					...input,
 				});
+				const savedUser = await newUser.save();
 
 				// console.log("newUser", newUser, "newUser", newUser);
 
@@ -98,7 +99,6 @@ export default {
 					text,
 					htmlToSend(newUser.firstName, newOtp.value)
 				);
-				const savedUser = await newUser.save();
 
 				// console.log("not supposed to run");
 
@@ -108,6 +108,7 @@ export default {
 					user: savedUser,
 				};
 			} catch (error) {
+				console.log("the sign up error");
 				throw error;
 			}
 		},

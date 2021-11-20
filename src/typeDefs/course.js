@@ -17,19 +17,19 @@ export default gql`
 
 	extend type Mutation {
 		createCourse(
-			school: ID
+			school: ID!
 
-			faculty: ID
+			faculty: ID!
 
-			dept: ID
+			dept: ID!
 
-			level: ID
+			level: ID!
 
-			name: String
+			name: String!
 
-			description: String
+			description: String!
 
-			semester: String
+			semester: Int!
 		): DataStatus
 
 		editCourse(

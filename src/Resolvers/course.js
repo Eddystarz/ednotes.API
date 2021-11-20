@@ -335,8 +335,8 @@ export default {
 							value: false,
 						};
 					const wallet = await Wallet.findOne({ user: Id });
-					const CourseTransaction = new Transact(wallet);
-					const transaction = await CourseTransaction.debit(
+					const courseTransaction = new Transact(wallet);
+					const transaction = await courseTransaction.debit(
 						courseDept.pay_per_semester,
 						"paid for course"
 					);

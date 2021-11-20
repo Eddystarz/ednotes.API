@@ -22,7 +22,7 @@ export default gql`
 		name: String!
 		faculty: ID!
 		description: String!
-		pay_per_semester: Int!
+		pay_per_semester: Int
 	}
 
 	type Dept {
