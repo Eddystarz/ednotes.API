@@ -24,7 +24,6 @@ export default {
 
 				return schools;
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		}),

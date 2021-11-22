@@ -87,7 +87,6 @@ export default {
 					const student = await Student.findOne({ user: Id });
 
 					if (!student) {
-						console.log("no student");
 						throw new ApolloError(
 							"No courses here. You are yet to set your profile !"
 						);
@@ -97,7 +96,6 @@ export default {
 						const trialCourse = await TrialCourse.findOne({ student });
 
 						if (!trialCourse) {
-							console.log("not on trial");
 							throw new ApolloError(
 								"No trial courses found for this student !"
 							);
@@ -116,7 +114,6 @@ export default {
 					}
 
 					if (clusterId) {
-						console.log("cluster runs");
 						const boughtCourse = await BoughtCourse.findOne({
 							_id: clusterId,
 							student,
@@ -142,7 +139,6 @@ export default {
 					if (where === undefined) {
 						throw new ApolloError("No trial or bought courses");
 					}
-					console.log("final where", where);
 
 					// eslint-disable-next-line prefer-const
 					courses = await Course.find({
@@ -150,7 +146,6 @@ export default {
 					})
 						.limit(limit + 1)
 						.sort({ createdAt: -1 });
-					console.log("not get mal", courses.length, limit);
 
 					if (courses.length === 0) {
 						return {
@@ -346,7 +341,6 @@ export default {
 							value: false,
 						};
 
-					console.log("transaction is", transaction);
 					const boughtCourse = await BoughtCourse.create({
 						user: Id,
 						student,

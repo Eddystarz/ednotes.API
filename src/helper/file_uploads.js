@@ -14,13 +14,11 @@ export const processUpload = async (file) => {
 
 	try {
 		const result = await new Promise((resolve, reject) => {
-			console.log("Promise called");
 			createReadStream().pipe(
 				cloudinary.v2.uploader.upload_stream(
 					{ resource_type: "auto", type: "authenticated", sign_url: true },
 					(error, result) => {
 						if (error) {
-							console.log("where error fails", error);
 							reject(error);
 						}
 

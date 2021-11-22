@@ -90,7 +90,7 @@ export default {
 				});
 
 				const day = dayjs(newStudent.createdAt).add(7, "d").format();
-				// console.log("the added day", day);
+
 				agenda.schedule(day, "end trial", {
 					id: newStudent._id,
 				});

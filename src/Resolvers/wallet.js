@@ -19,8 +19,6 @@ export default {
 						message: "Wallet fetched unsuccessfully !",
 						value: false,
 					};
-				// console.log("acb", wallet.get("account_balance"));
-				// wallet.get('account_balance', null, { getters: false });
 
 				return {
 					message: "Wallet fetched successfully !",
@@ -91,7 +89,6 @@ export default {
 			isAuthenticated,
 			async (_, { amount }, { Id }) => {
 				try {
-					console.log("in fund");
 					const wallet = await Wallet.findOne({ user: Id })
 						.populate("user")
 						.exec();

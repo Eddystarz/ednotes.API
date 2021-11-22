@@ -42,7 +42,6 @@ export default {
 		// Logged in user profile
 		user: combineResolvers(isUser, async (_, __, { Id }) => {
 			try {
-				// console.log(Id)
 				const user = await User.findById(Id);
 
 				if (!user) {
@@ -76,8 +75,6 @@ export default {
 				});
 				const savedUser = await newUser.save();
 
-				// console.log("newUser", newUser, "newUser", newUser);
-
 				pubsub.publish(UserTopics.USER_CREATED, {
 					[UserTopics.USER_CREATED]: newUser,
 				});
@@ -100,15 +97,12 @@ export default {
 					htmlToSend(newUser.firstName, newOtp.value)
 				);
 
-				// console.log("not supposed to run");
-
 				return {
 					message: "Account created successfully, check your email for code",
 					value: true,
 					user: savedUser,
 				};
 			} catch (error) {
-				console.log("the sign up error");
 				throw error;
 			}
 		},
@@ -186,9 +180,7 @@ export default {
 		login: async (_, { input }) => {
 			try {
 				const lowercase = input.email.toLowerCase();
-				console.log("hereee", input.email, input.email.toLowerCase());
 				const user = await User.findOne({ email: lowercase });
-				console.log("user", user);
 
 				if (!user) {
 					return {
@@ -196,7 +188,6 @@ export default {
 						value: false,
 					};
 				}
-				console.log("here", user);
 
 				if (!user.isVerified) {
 					return {
@@ -222,7 +213,6 @@ export default {
 					user,
 				};
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		},
@@ -243,22 +233,10 @@ export default {
 						value: true,
 					};
 				} catch (error) {
-					console.log(error);
 					throw error;
 				}
 			}
 		),
-
-		// @TODO: This can be a Rest API Endpoint Instead
-		// confirmEmail: async (_, { token }) => {
-		// 	try {
-		// 		jwt.verify(token, JWT_SECRET_KEY);
-
-		// 		return true;
-		// 	} catch (error) {
-		// 		return false;
-		// 	}
-		// },
 
 		confirmEmail: async (_, { code, email }) => {
 			try {
@@ -533,7 +511,6 @@ export default {
 					updatedUser,
 				};
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		}),

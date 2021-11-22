@@ -4,7 +4,7 @@ const { JWT_SECRET_KEY } = config;
 
 const getTokenFrom = (request) => {
 	const authorization = request.get("authorization");
-	// console.log("autho", authorization);
+
 	if (authorization && authorization.toLowerCase().startsWith("bearer "))
 		return authorization.substring(7);
 	return null;
@@ -13,7 +13,7 @@ const getTokenFrom = (request) => {
 export const isAuthenticated = async (req, res, next) => {
 	try {
 		const token = getTokenFrom(req);
-		// console.log("the token", token);
+
 		if (!token)
 			return res.status(401).json({
 				message: "Unauthorized user !",
@@ -25,10 +25,10 @@ export const isAuthenticated = async (req, res, next) => {
 				message: "Unauthorized user !",
 				value: false,
 			});
-		console.log("the decoded token", decodedToken);
+
 		req.app.locals.authenticated = decodedToken;
 		next();
 	} catch (error) {
-		console.log("res_middlware", error);
+		throw error;
 	}
 };

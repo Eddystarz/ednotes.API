@@ -179,7 +179,6 @@ export default {
 					const id = new mongoose.Types.ObjectId();
 
 					const uploadData = await processUpload(file);
-					console.log("what's uploaded", uploadData);
 
 					const proxy_url = `${serverUrl}/notes/${lectureNoteId}/${id}.${mime_type}`;
 
@@ -209,7 +208,6 @@ export default {
 						note: updatedNote,
 					};
 				} catch (error) {
-					// console.error("th error", error);
 					throw error;
 				}
 			}
