@@ -20,7 +20,6 @@ export default {
 				}
 				return faculties;
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		}),
@@ -33,7 +32,6 @@ export default {
 				}
 				return faculty;
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		}),
@@ -51,7 +49,6 @@ export default {
 
 				return result;
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		}),

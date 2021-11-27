@@ -53,6 +53,18 @@ export default {
 				throw error;
 			}
 		}),
+
+		updateDept: combineResolvers(isAdmin, async (_, args) => {
+			try {
+				const updatedDept = await Dept.findByIdAndUpdate(args.deptId, args, {
+					new: true,
+				});
+
+				return updatedDept;
+			} catch (error) {
+				throw error;
+			}
+		}),
 	},
 
 	Subscription: {

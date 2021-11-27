@@ -7,24 +7,29 @@ export default gql`
 		"""
 		get_single_course(courseId: ID!): DataStatus
 		get_all_courses(cursor: String, limit: Int): CourseConnection
-		get_user_courses(cursor: String, limit: Int): CourseConnection
+		get_student_semester_courses: SemesterCourseStatus
+		get_semester_courses(
+			cursor: String
+			limit: Int
+			clusterId: String
+		): CourseConnection
 	}
 
 	extend type Mutation {
 		createCourse(
-			school: ID
+			school: ID!
 
-			faculty: ID
+			faculty: ID!
 
-			dept: ID
+			dept: ID!
 
-			level: ID
+			level: ID!
 
-			name: String
+			name: String!
 
-			description: String
+			description: String!
 
-			semester: String
+			semester: Int!
 		): DataStatus
 
 		editCourse(
@@ -38,6 +43,13 @@ export default gql`
 		"At no point is the deleted news data returned in this request
 		"""
 		deleteCourse(courseId: ID!): DataStatus
+		buySemesterCourse(
+			school: ID!
+			faculty: ID!
+			dept: ID!
+			level: ID!
+			semester: Int!
+		): TransactionStatus
 	}
 
 	type Course {
@@ -58,6 +70,26 @@ export default gql`
 		semester: String
 
 		courseTopics: [Topic]
+	}
+
+	type SemesterCourse {
+		_id: ID!
+		school: School
+		faculty: Faculty
+		dept: Dept
+		level: Level
+		semester: Int
+	}
+	type SemesterCourseStatus {
+		message: String!
+		value: Boolean!
+		semesterCourses: [SemesterCourse]
+	}
+
+	type TransactionStatus {
+		message: String!
+		value: Boolean!
+		transaction: Transaction
 	}
 
 	type CourseConnection {

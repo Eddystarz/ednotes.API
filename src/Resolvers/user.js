@@ -1,18 +1,27 @@
 import { ApolloError } from "apollo-server-express";
 import jwt from "jsonwebtoken";
+
 import { combineResolvers } from "graphql-resolvers";
+
+// import dayjs from "dayjs";
 
 import config from "../helper/config";
 
 // ========== Models ==============//
 import User from "../database/Models/user";
+import Student from "../database/Models/student";
+import Otp from "../database/Models/otp";
+import BlacklistedToken from "../database/Models/blacklisted_token";
+import Wallet from "../database/Models/wallet";
 
 // ============= Services ===============//
 import { isAuthenticated, isAdmin, isUser, isSuperAdmin } from "./middleware";
 import { pubsub } from "../subscription";
 import UserTopics from "../subscription/events/user";
 import { htmlToSend, sendMail } from "../services/email_service";
-
+import Transaction from "../database/Models/transaction";
+import TrialCourse from "../database/Models/trial_course";
+import BoughtCourse from "../database/Models/bought_course";
 const { JWT_SECRET_KEY } = config;
 export default {
 	Query: {
@@ -33,7 +42,6 @@ export default {
 		// Logged in user profile
 		user: combineResolvers(isUser, async (_, __, { Id }) => {
 			try {
-				// console.log(Id)
 				const user = await User.findById(Id);
 
 				if (!user) {
@@ -65,28 +73,34 @@ export default {
 					userType: "user",
 					...input,
 				});
-				const result = await newUser.save();
+				const savedUser = await newUser.save();
 
 				pubsub.publish(UserTopics.USER_CREATED, {
-					[UserTopics.USER_CREATED]: result,
+					[UserTopics.USER_CREATED]: newUser,
 				});
-
-				const token = result.emailToken();
+				const newOtp = new Otp({
+					user: newUser._id,
+					email: newUser.email,
+					type: "verify_email",
+				});
+				await newOtp.save();
+				// const token = newUser.emailToken();
 				const subject = "Email Confirmation";
-				const url = "localhost";
-				const links = `http://${url}/confirmation/${result.email}/${token.token}`;
+				// const url = "localhost";
+				// const links = `http://${url}/confirmation/${newUser.email}/${token.token}`;
 				const text = "";
 
-				const html = `
-          Hello ${result.name}, <br /> Please verify your account by clicking the link: <a href="${links}"> </a>
-          <br /> Thank You!
-        `;
-				sendMail(result.email, subject, text, htmlToSend(html));
+				await sendMail(
+					newUser.email,
+					subject,
+					text,
+					htmlToSend(newUser.firstName, newOtp.value)
+				);
 
 				return {
 					message: "Account created successfully, check your email for code",
 					value: true,
-					user: result,
+					user: savedUser,
 				};
 			} catch (error) {
 				throw error;
@@ -174,7 +188,14 @@ export default {
 						value: false,
 					};
 				}
-				// added await, probably what is breaking ayo fetaure
+
+				if (!user.isVerified) {
+					return {
+						message: "Unverified email adress, check you email for code !",
+						value: false,
+					};
+				}
+
 				const isPasswordValid = await user.verifyPass(input.password);
 
 				if (!isPasswordValid) {
@@ -192,22 +213,116 @@ export default {
 					user,
 				};
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		},
 
-		// @TODO: This should be a Rest API Endpoint Instead
-		confirmEmail: async (_, { token }) => {
-			try {
-				jwt.verify(token, JWT_SECRET_KEY);
+		logout: combineResolvers(
+			isAuthenticated,
+			async (_, __, { Id, exp, token }) => {
+				try {
+					const newBlt = new BlacklistedToken({
+						user: Id,
+						expiredAt: new Date(Number(exp) * 1000),
+						token,
+					});
 
-				return true;
+					await newBlt.save();
+					return {
+						message: "User logged out successfully!",
+						value: true,
+					};
+				} catch (error) {
+					throw error;
+				}
+			}
+		),
+
+		confirmEmail: async (_, { code, email }) => {
+			try {
+				email = email.toLowerCase();
+				const matchedOtp = await Otp.findOne({
+					email,
+					value: code,
+					type: "verify_email",
+				});
+
+				if (!matchedOtp) {
+					return {
+						message: "Invalid or expired code!",
+						value: false,
+					};
+				}
+				const user = await User.findOne({ email });
+				if (!user)
+					return {
+						message: "You are yet to register with us!",
+						value: false,
+					};
+
+				await matchedOtp.remove();
+				if (user.isVerified)
+					return {
+						message: "Your email has been already verified!",
+						value: false,
+					};
+				user.isVerified = true;
+				await user.save();
+				await Wallet.create({ user });
+				// const currentDate = dayjs(Date());
+				// const expiredDate = dayjs(matchedOtp.expiredAt);
+				// const diff = expiredDate.diff(currentDate);
+				return {
+					message: "Email verified successfully, proceed to login.",
+					value: true,
+				};
 			} catch (error) {
-				return false;
+				throw error;
 			}
 		},
+		resendCode: async (_, { email }) => {
+			try {
+				email = email.toLowerCase();
+				const user = await User.findOne({ email });
+				if (!user)
+					return {
+						message: "You are yet to register with us!",
+						value: false,
+					};
 
+				if (user.isVerified)
+					return {
+						message: "Your email has been already verified!",
+						value: false,
+					};
+				await Otp.deleteMany({
+					email,
+					type: "verify_email",
+				});
+
+				const newOtp = new Otp({
+					user: user._id,
+					email: user.email,
+					type: "verify_email",
+				});
+				await newOtp.save();
+				const subject = "Email Confirmation";
+				const text = "";
+
+				await sendMail(
+					user.email,
+					subject,
+					text,
+					htmlToSend(user.firstName, newOtp.value)
+				);
+				return {
+					message: "Verification code has now been resend to your email!",
+					value: true,
+				};
+			} catch (error) {
+				throw error;
+			}
+		},
 		// User initiates change of password from forgot password
 		forgotPassword: async (_, { email }) => {
 			try {
@@ -226,7 +341,7 @@ export default {
 				const url = "localhost";
 				const text = "";
 
-				const links = `http://${url}/confirmation/${user.email}/${token.token}`;
+				const links = `http://${url}/confirmation/${user.email}/${token}`;
 				const html = `
           Hello ${user.name}, <br /> You are getting this mail because you have requested for a 
           password reset. This password reset window is limited to twenty minutes. 
@@ -247,7 +362,7 @@ export default {
 			}
 		},
 
-		// Change password from forgot password...(Public route)
+		// Change password from forgot password...(Public route) later
 		changePassword: async (
 			_,
 			{ pass_token, email, new_password, confirm_password }
@@ -340,7 +455,7 @@ export default {
 				}
 			}
 		),
-
+		// limit what they could update later
 		editUser: combineResolvers(isAuthenticated, async (_, args, { Id }) => {
 			try {
 				const user = await User.findByIdAndUpdate(Id, args, {
@@ -356,6 +471,31 @@ export default {
 				throw error;
 			}
 		}),
+		// for development only
+		removeUserData: async (_, { email }) => {
+			try {
+				const userToBeRemoved = await User.findOne({ email });
+				if (!userToBeRemoved)
+					return {
+						message: "Let's not remove thin air ):",
+						value: false,
+					};
+
+				await Student.deleteOne({ user: userToBeRemoved });
+				await Wallet.deleteOne({ user: userToBeRemoved });
+				await Transaction.deleteMany({ user: userToBeRemoved });
+				await TrialCourse.deleteMany({ user: userToBeRemoved });
+				await BoughtCourse.deleteMany({ user: userToBeRemoved });
+				await userToBeRemoved.remove();
+
+				return {
+					message: "User data removed successfully !",
+					value: true,
+				};
+			} catch (error) {
+				throw error;
+			}
+		},
 
 		makeSuperAdmin: combineResolvers(isSuperAdmin, async (_, { userId }) => {
 			try {
@@ -371,7 +511,6 @@ export default {
 					updatedUser,
 				};
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		}),

@@ -19,8 +19,9 @@
     "no-var": "off",
     "spaced-comment": "warn",
     "no-lonely-if": "off",
+    "nonblock-statement-body-position": "off",
     "no-shadow": "off",
-    "consistent-return": "warn",
+    "consistent-return": "off",
     "no-confusing-arrow": "off",
     "import/newline-after-import": "off",
     "no-trailing-spaces": "off",
@@ -31,6 +32,7 @@
     "no-unused-expressions": "off",
     "object-curly-newline": "off",
     "no-console": "off",
+    "curly": "off",
     "no-useless-catch": "off",
     "operator-linebreak": "off",
     "no-else-return": "off",
@@ -60,6 +62,8 @@
     "prefer-destructuring": "off",
     "space-before-blocks": "warn",
     "keyword-spacing": "warn",
-    "space-in-parens": "warn"
+    "space-in-parens": "warn",
+    "no-param-reassign": "off"
+   
   }
 }

@@ -13,6 +13,7 @@ import storyResolver from "./edstory";
 import courseResolver from "./course";
 import topicResolver from "./course_topic";
 import lectureNoteResolver from "./lecture_note";
+import walletResolver from "./wallet";
 // import rewardPointResolver from "./reward_point";
 
 const customDateScalarResolver = {
@@ -35,6 +36,7 @@ export default [
 	courseResolver,
 	topicResolver,
 	lectureNoteResolver,
+	walletResolver,
 	customDateScalarResolver,
 	customFileUploadResolver,
 	// rewardPointResolver,

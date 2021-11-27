@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import uniqueValidator from "mongoose-unique-validator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import config from "../../helper/config";
@@ -16,10 +17,12 @@ const userSchema = new Schema(
 		email: {
 			type: String,
 			required: true,
+			unique: true,
 		},
 		username: {
 			type: String,
 			required: true,
+			unique: true,
 		},
 		phoneNumber: {
 			type: String,
@@ -35,7 +38,7 @@ const userSchema = new Schema(
 		},
 		isActive: {
 			type: Boolean,
-			default: true,
+			default: false,
 		},
 		userType: {
 			type: String,
@@ -46,7 +49,7 @@ const userSchema = new Schema(
 		timestamps: true,
 	}
 );
-
+userSchema.plugin(uniqueValidator);
 // Hash password before save to DB
 userSchema.pre("save", async function (next) {
 	if (this.isModified("password")) {

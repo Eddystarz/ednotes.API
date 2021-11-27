@@ -13,11 +13,11 @@ export default gql`
 	}
 
 	type FileType {
-		_id: ID
 		"""
-		Url refrence for file in cloud storage
+		_id: ID ---- commented
+		Url reference for file mapping to cloud storage
 		"""
-		url: String
+		proxy_url: String
 		"""
 		Name of file Uploaded
 		"""
@@ -28,5 +28,14 @@ export default gql`
 		so client should convert date to users timezone before displaying
 		"""
 		date_uploaded: Date
+	}
+	type Transaction {
+		_id: ID
+		amount: String
+		type: String!
+		balance_after_transaction: String
+		description: String
+		date: Date!
+		updatedAt: Date!
 	}
 `;

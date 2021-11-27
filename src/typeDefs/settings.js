@@ -5,7 +5,7 @@ export default gql`
 		"""
 		only by an admin
 		"""
-		get_settings: Settings!
+		settings: Settings!
 	}
 	"""
 	only by an admin

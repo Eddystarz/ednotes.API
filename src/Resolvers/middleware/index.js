@@ -10,7 +10,7 @@ export const isAuthenticated = (_, __, { logged_in_user }) =>
 
 // Protection for regular users
 export const isUser = combineResolvers(isAuthenticated, (_, __, { userType }) =>
-	userType === "user" || userType === "admin"
+	userType === "user" || userType === "admin" || userType === "student"
 		? skip
 		: new AuthenticationError("Not Authorized to perform this action")
 );
@@ -18,10 +18,11 @@ export const isUser = combineResolvers(isAuthenticated, (_, __, { userType }) =>
 // Protection for students
 export const isStudent = combineResolvers(
 	isAuthenticated,
-	(_, __, { userType }) =>
-		userType === "student"
+	(_, __, { userType }) => {
+		return userType === "student"
 			? skip
-			: new AuthenticationError("Not Authorized to perform this action")
+			: new AuthenticationError("Not Authorized to perform this action");
+	}
 );
 
 // Protection for Admin previlages

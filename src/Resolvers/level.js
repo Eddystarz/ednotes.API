@@ -23,7 +23,6 @@ export default {
 				}
 				return levels;
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		}),
@@ -34,10 +33,9 @@ export default {
 				if (!level) {
 					throw new ApolloError("Level not found!");
 				}
-				console.log(level);
+
 				return level;
 			} catch (error) {
-				console.log(error);
 				throw error;
 			}
 		}),

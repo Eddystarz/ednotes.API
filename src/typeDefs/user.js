@@ -31,7 +31,10 @@ export default gql`
 		"""
 		login(input: loginInput!): UserStatus
 
-		confirmEmail(token: String!): Boolean!
+		logout: GeneralStatus
+
+		confirmEmail(code: String!, email: String!): GeneralStatus!
+		resendCode(email: String!): GeneralStatus!
 
 		"""
 		Initiate forgot password process for all users
@@ -62,6 +65,10 @@ export default gql`
 			username: String
 			phoneNumber: String
 		): UserStatus!
+		"""
+		for dev only or admin use
+		"""
+		removeUserData(email: String!): GeneralStatus!
 
 		makeSuperAdmin(userId: ID!): UserStatus!
 	}
@@ -88,6 +95,10 @@ export default gql`
 		message: String!
 		value: Boolean!
 		user: User
+	}
+	type GeneralStatus {
+		message: String!
+		value: Boolean!
 	}
 
 	type User {

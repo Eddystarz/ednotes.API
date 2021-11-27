@@ -12,6 +12,8 @@ import genericTypeDefs from "./generic";
 import courseTypeDefs from "./course";
 import topicTypeDefs from "./course_topic";
 import lectureTypeDefs from "./lecture_notes";
+import walletTypeDefs from "./wallet";
+
 // import rewardTypeDefs from "./reward_point";
 
 const typeDefs = gql`
@@ -43,5 +45,6 @@ export default [
 	courseTypeDefs,
 	topicTypeDefs,
 	lectureTypeDefs,
+	walletTypeDefs,
 	// rewardTypeDefs,
 ];

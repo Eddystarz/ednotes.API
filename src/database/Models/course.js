@@ -17,12 +17,13 @@ const courseSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: "Level",
 	},
-	courseTopics: [
-		{
-			type: Schema.Types.ObjectId,
-			ref: "CourseTopic",
-		},
-	],
+	// to be used in solv n+1
+	// courseTopics: [
+	// 	{
+	// 		type: Schema.Types.ObjectId,
+	// 		ref: "CourseTopic",
+	// 	},
+	// ],
 	name: {
 		type: String,
 		required: true,
@@ -32,8 +33,8 @@ const courseSchema = new Schema({
 		required: true,
 	},
 	semester: {
-		type: String,
-		enum: ["first", "second"],
+		type: Number,
+		enum: [1, 2],
 	},
 });
 

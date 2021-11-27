@@ -7,6 +7,8 @@ import { agenda } from "./services/agenda";
 import resolvers from "./Resolvers";
 import typeDefs from "./typeDefs";
 import config from "./helper/config";
+import BlacklistedToken from "./database/Models/blacklisted_token";
+
 const { NODE_ENV } = config;
 
 const graphQlServer = async (app, PORT) => {
@@ -29,9 +31,11 @@ const graphQlServer = async (app, PORT) => {
 				// Http request
 				// get the request header
 				const header = req.headers.authorization || "";
-
 				const user = await verifyUser(header);
-				if (!user) {
+				const token = header.split(" ")[1];
+				const foundToken = await BlacklistedToken.findOne({ token });
+				
+				if (!user || foundToken) {
 					return {
 						logged_in_user: false,
 						Id: null,
@@ -42,6 +46,8 @@ const graphQlServer = async (app, PORT) => {
 						logged_in_user: true,
 						Id: user.userId,
 						userType: user.userType,
+						exp: user.exp,
+						token,
 					};
 				}
 			}
