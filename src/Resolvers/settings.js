@@ -9,7 +9,7 @@ import { isAuthenticated } from "./middleware";
 
 export default {
 	Query: {
-		get_settings: combineResolvers(isAuthenticated, async () => {
+		settings: combineResolvers(isAuthenticated, async () => {
 			try {
 				const settings = await Settings.findOne();
 				if (!settings) throw new ApolloError("Fatal, settings not found!");
@@ -21,7 +21,7 @@ export default {
 	},
 
 	Mutation: {
-		fundWallet: combineResolvers(
+		editSettings: combineResolvers(
 			isAuthenticated,
 			async (_, { type, value }) => {
 				try {
