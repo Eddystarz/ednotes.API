@@ -6,7 +6,7 @@
   "scripts": {
     "migrate": "sequelize db:migrate",
     "clean": "rm -rf build && mkdir build",
-    "deploy": "git add . && git commit -m Heroku && git push heroku main",
+    "deploy": "git add . && git commit -m Heroku && git push heroku master",
     "pp": "console.log(process.argv)",
     "commit": "git add . && git commit -m",
     "dev": "NODE_ENV=development & babel-watch ./src/index.js",
@@ -17,7 +17,7 @@
     "build-server": "babel -d ./build ./src -s",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "dareedyone",
+  "author": "ednotes",
   "license": "MIT",
   "dependencies": {
     "@babel/cli": "^7.14.3",
